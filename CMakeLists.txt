@@ -52,7 +52,7 @@ if(${STATIC_ANALYSIS})
 endif()
 
 target_link_libraries(ilanta PRIVATE
-  fmt::fmt
+  ubsan
   spdlog::spdlog
   gpiod::gpiodcxx)
 
@@ -68,7 +68,7 @@ install(TARGETS ilanta
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-set_target_properties(ilanta PROPERTIES EXPORT_NAME Ilanta)
+set_target_properties(ilanta PROPERTIES EXPORT_NAME ilanta)
 
 install(
   DIRECTORY ilanta/
@@ -99,7 +99,10 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
   DESTINATION ${INSTALL_CONFIGDIR})
 
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/FindIlanta.cmake COPYONLY)
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiod.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiod.cmake
+  COPYONLY)
 
 export(EXPORT ilanta-targets
   FILE 

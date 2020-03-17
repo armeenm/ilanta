@@ -1,16 +1,15 @@
-get_filename_component(ILANTA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(Ilanta_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
-list(APPEND CMAKE_MODULE_PATH ${ILANTA_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH ${Ilanta_CMAKE_DIR})
 # For Findgpiod.cmake
-find_dependency(gpiod)
+find_dependency(gpiod REQUIRED)
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
-find_dependency(spdlog)
-find_dependency(fmt)
+find_dependency(spdlog REQUIRED)
 
-if(NOT TARGET Ilanta::Ilanta)
-  include("${ILANTA_CMAKE_DIR}/IlantaTargets.cmake")
+if(NOT TARGET Ilanta::ilanta)
+  include("${Ilanta_CMAKE_DIR}/IlantaTargets.cmake")
 endif()
 
-set(ILANTA_LIBRARIES Ilanta::Ilanta)
+set(Ilanta_LIBRARIES Ilanta::ilanta)
