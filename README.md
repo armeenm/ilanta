@@ -1,1 +1,1 @@
-Requirements: C++20 (for \_\_VA\_OPT\__) and spdlog
+Requirements: C++20 and spdlog
