@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <type_traits>
 #include <vector>
@@ -25,11 +26,13 @@ public:
     std::filesystem::path path;
   };
 
-  enum class Flag {
-    RD_EN = I2C_M_RD,
+  enum Flag {
+    READ = I2C_M_RD,
     ADDR_TEN = I2C_M_TEN,
     NO_RD_ACK = I2C_M_NO_RD_ACK,
-    IGNORE_NAK = I2C_M_IGNORE_NAK
+    IGNORE_NAK = I2C_M_IGNORE_NAK,
+    NOSTART = I2C_M_NOSTART,
+    STOP = I2C_M_STOP
   };
 
   using Message = detail::i2c_msg;
@@ -58,7 +61,7 @@ public:
   [[nodiscard]] auto info() const noexcept -> Info;
   [[nodiscard]] auto fd() const noexcept -> int;
 
-  auto find_dev() const noexcept -> std::optional<std::vector<std::uint16_t>>;
+  [[nodiscard]] auto find_dev() const noexcept -> std::vector<std::uint16_t>;
 
   auto transfer(std::vector<I2C::Message>&) const noexcept -> bool;
 
