@@ -34,7 +34,7 @@ public:
 
   using Message = detail::i2c_msg;
 
-  [[nodiscard]] static auto find() -> std::vector<Info>;
+  [[nodiscard]] static auto find_bus() noexcept -> std::vector<Info>;
 
   template <typename T> I2C(T&& path) : info_{std::forward<T>(path)} {
     static_assert(std::is_convertible_v<std::remove_cvref_t<T>, std::filesystem::path>,
@@ -57,6 +57,8 @@ public:
 
   [[nodiscard]] auto info() const noexcept -> Info;
   [[nodiscard]] auto fd() const noexcept -> int;
+
+  auto find_dev() const noexcept -> std::optional<std::vector<std::uint16_t>>;
 
   auto transfer(std::vector<I2C::Message>&) const noexcept -> bool;
 
