@@ -32,8 +32,7 @@ auto I2C::find_dev() const noexcept -> std::vector<std::uint16_t> {
   for (std::uint16_t addr = MIN_ADDR_7; addr < MAX_ADDR_7; ++addr) {
     auto data = std::vector<I2C::Message>{{.addr = addr, .flags = 0, .len = 0, .buf = nullptr}};
 
-    auto success = transfer(data);
-    if (success)
+    if (transfer(data) == 0)
       ret.push_back(addr);
   }
 
@@ -47,11 +46,11 @@ auto I2C::transfer(std::vector<I2C::Message>& data) const noexcept -> bool {
       detail::i2c_rdwr_ioctl_data{data.data(), static_cast<detail::__u32>(data.size())};
 
   if (detail::ioctl(fd_, I2C_RDWR, &ioctl_data) < 0) {
-    spdlog::error("Failed to transfer I2C data: {}", strerror(errno));
-    return false;
+    spdlog::error("Failed to transfer I2C data: {}", std::strerror(errno));
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 } // namespace ilanta
