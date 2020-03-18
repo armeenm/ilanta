@@ -1,4 +1,5 @@
 #include "ilanta/io/gpiod.hpp"
+#include "ilanta/util/errors.hpp"
 
 #include <spdlog/fmt/bundled/core.h>
 #include <spdlog/spdlog.h>
@@ -16,11 +17,8 @@ auto request_output(gpiod::line const& l, std::string_view consumer, bool invert
              invert ? gpiod::line_request::FLAG_ACTIVE_LOW : 0},
             default_val);
 
-  if (!l.is_requested()) {
-    auto err = fmt::format("Failed to request line {}", l.offset());
-    spdlog::error(err);
-    throw std::runtime_error(err);
-  }
+  if (!l.is_requested())
+    err_log_throw<std::runtime_error>("Failed to request line {}", l.offset());
 
   spdlog::info("Successfully requested line {}", l.offset());
 }
