@@ -17,7 +17,22 @@ find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED SHARED)
 find_package(gpiod REQUIRED MODULE)
 
-set(BUILD_OPTS -Wshadow -Wduplicated-cond -Wlogical-op -Wduplicated-branches -Wnull-dereference -Wold-style-cast -Wuseless-cast -Wformat=2 -Wall -Wextra -Wconversion -Wpedantic -pipe -flto -fsanitize=undefined)
+set(BUILD_OPTS 
+  -Wshadow
+  -Wduplicated-cond
+  -Wlogical-op
+  -Wduplicated-branches
+  -Wnull-dereference
+  -Wold-style-cast
+  -Wuseless-cast
+  -Wformat=2 
+  -Wall
+  -Wextra
+  -Wconversion
+  -Wpedantic
+  -pipe
+  -flto
+  -fsanitize=undefined)
 
 file(GLOB_RECURSE SRCS
   LIST_DIRECTORIES false
