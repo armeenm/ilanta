@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cassert>
 #include <cerrno>
 #include <concepts>
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <span>
 #include <spdlog/spdlog.h>
 #include <type_traits>
 #include <vector>
@@ -65,7 +67,7 @@ public:
 
   [[nodiscard]] auto find_devs() const noexcept -> std::vector<std::uint16_t>;
 
-  auto transfer(std::vector<I2C::Message>&) const noexcept -> bool;
+  auto transfer(std::span<Message> data) const noexcept -> bool;
 
 private:
   Info info_;
