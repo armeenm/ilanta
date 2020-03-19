@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cerrno>
+#include <concepts>
 #include <cstdint>
 #include <filesystem>
 #include <optional>
@@ -36,10 +37,11 @@ public:
   };
 
   using Message = detail::i2c_msg;
+  /* struct i2c_msg { __u16 addr, flags, len; __u8* buf } */
 
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<Info>;
 
-  template <typename T> I2C(T&& path) : info_{std::forward<T>(path)} {
+  template <typename T>[[nodiscard]] I2C(T&& path) : info_{std::forward<T>(path)} {
     static_assert(std::is_convertible_v<std::remove_cvref_t<T>, std::filesystem::path>,
                   "'path' argument must be convertible to std::filesystem::path");
 
@@ -47,7 +49,7 @@ public:
 
     fd_ = detail::open(info_.path.c_str(), O_RDWR);
     if (fd_ < 0)
-      err_log_throw<std::runtime_error>("Failed to open file: {}", strerror(errno));
+      err_log_throw("Failed to open file: {}", std::strerror(errno));
   }
 
   I2C(I2C const&) = delete;

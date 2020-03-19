@@ -18,7 +18,7 @@ auto request_output(gpiod::line const& l, std::string_view consumer, bool invert
             default_val);
 
   if (!l.is_requested())
-    err_log_throw<std::runtime_error>("Failed to request line {}", l.offset());
+    err_log_throw("Failed to request line {}", l.offset());
 
   spdlog::info("Successfully requested line {}", l.offset());
 }
