@@ -4,6 +4,7 @@
 #include <array>
 #include <gpiod.hpp>
 #include <optional>
+#include <string_view>
 
 namespace ilanta {
 
@@ -22,7 +23,7 @@ public:
     std::optional<std::array<line, 3>> ms = std::nullopt;
   };
 
-  BigEasyDriver(Pins&&, LogicLevel reverse = LogicLevel::HIGH);
+  BigEasyDriver(Pins&&, std::string_view consumer_name, LogicLevel reverse = LogicLevel::HIGH);
 
   BigEasyDriver(BigEasyDriver const&) = delete;
   BigEasyDriver(BigEasyDriver&&) noexcept = default;

@@ -4,11 +4,11 @@
 
 namespace ilanta {
 
-auto I2C::find_bus() noexcept -> std::vector<I2C::Info> {
+auto I2C::find_buses() noexcept -> std::vector<I2C::Info> {
   auto constexpr DIR_PREFIX = "/dev/";
   auto constexpr FILE_PREFIX = std::string_view{"i2c-"};
 
-  auto ret = std::vector<I2C::Info>();
+  auto ret = std::vector<Info>();
 
   for (auto const& entry : std::filesystem::directory_iterator{DIR_PREFIX})
     if (std::strncmp(entry.path().c_str(), FILE_PREFIX.data(), FILE_PREFIX.size()) == 0)
@@ -23,14 +23,15 @@ auto I2C::info() const noexcept -> I2C::Info { return info_; }
 auto I2C::fd() const noexcept -> int { return fd_; }
 
 // TODO: Eventually figure out 10-bit addressing...
-auto I2C::find_dev() const noexcept -> std::vector<std::uint16_t> {
+auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
   auto constexpr MIN_ADDR_7 = 0x8;
-  auto constexpr MAX_ADDR_7 = 0x78;
+  auto constexpr MAX_ADDR_7 = 0x77;
 
   auto ret = std::vector<std::uint16_t>();
 
-  for (std::uint16_t addr = MIN_ADDR_7; addr < MAX_ADDR_7; ++addr) {
-    auto data = std::vector<I2C::Message>{{.addr = addr, .flags = 0, .len = 0, .buf = nullptr}};
+  for (std::uint16_t addr = MIN_ADDR_7; addr <= MAX_ADDR_7; ++addr) {
+    auto data = std::vector<Message>{{.addr = addr, .flags = 0, .len = 0, .buf = nullptr},
+                                     {.addr = addr, .flags = READ, .len = 0, .buf = nullptr}};
 
     if (transfer(data) == 0)
       ret.push_back(addr);

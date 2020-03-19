@@ -1,4 +1,4 @@
-#include "ilanta/io/big_easy_driver.h"
+#include "ilanta/io/big_easy_driver.hpp"
 
 #include "ilanta/io/gpiod.hpp"
 
@@ -9,11 +9,12 @@
 
 namespace ilanta {
 
-BigEasyDriver::BigEasyDriver(Pins&& pins, LogicLevel const reverse) : pins_(std::move(pins)) {
+BigEasyDriver::BigEasyDriver(Pins&& pins, std::string_view consumer_name, LogicLevel const reverse)
+    : pins_(std::move(pins)) {
   spdlog::info("Constructing BigEasyDriver");
 
-  auto constexpr setup_l = [](gpiod::line const& l, auto&&... ts) {
-    request_output(l, "Berrypicker", std::forward<decltype(ts)>(ts)...);
+  auto const setup_l = [&](gpiod::line const& l, auto&&... ts) {
+    request_output(l, consumer_name, std::forward<decltype(ts)>(ts)...);
   };
 
   setup_l(pins_.step);
@@ -30,7 +31,7 @@ BigEasyDriver::BigEasyDriver(Pins&& pins, LogicLevel const reverse) : pins_(std:
     setup_l(*pins_.sleep, true);
 
   if (pins_.ms)
-    for (const auto& pin : *pins_.ms)
+    for (auto const& pin : *pins_.ms)
       setup_l(pin);
 }
 
@@ -46,7 +47,7 @@ auto BigEasyDriver::move(Direction const dir, unsigned int const steps) noexcept
   // Set desired direction
   pins_.dir.set_value(dir);
 
-  for (unsigned int i = 0; i < steps; i++) {
+  for (unsigned int i = 0; i < steps; ++i) {
     pins_.step.set_value(1);
     std::this_thread::sleep_for(PERIOD_HALF);
     pins_.step.set_value(0);
