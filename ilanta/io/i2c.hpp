@@ -43,9 +43,9 @@ public:
 
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<Info>;
 
-  template <typename T>[[nodiscard]] I2C(T&& path) : info_{std::forward<T>(path)} {
-    static_assert(std::is_convertible_v<std::remove_cvref_t<T>, std::filesystem::path>,
-                  "'path' argument must be convertible to std::filesystem::path");
+  template <typename T>
+  requires std::convertible_to<T, std::filesystem::path>[[nodiscard]] I2C(T&& path)
+      : info_{std::forward<T>(path)} {
 
     spdlog::info("Constructing I2C");
 

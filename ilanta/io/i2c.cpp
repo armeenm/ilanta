@@ -30,8 +30,8 @@ auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
   auto ret = std::vector<std::uint16_t>();
 
   for (std::uint16_t addr = MIN_ADDR_7; addr <= MAX_ADDR_7; ++addr) {
-    auto data = std::array<Message, 2>{{.addr = addr, .flags = 0, .len = 0, .buf = nullptr},
-                                       {.addr = addr, .flags = READ, .len = 0, .buf = nullptr}};
+    auto data = std::array{Message{.addr = addr, .flags = 0, .len = 0, .buf = nullptr},
+                           Message{.addr = addr, .flags = READ, .len = 0, .buf = nullptr}};
 
     if (!transfer(data))
       ret.push_back(addr);
