@@ -8,7 +8,6 @@
 #include <optional>
 #include <span>
 #include <spdlog/spdlog.h>
-#include <type_traits>
 #include <vector>
 
 #include "ilanta/util/errors.hpp"
