@@ -1,7 +1,6 @@
-#include "ilanta/io/gpiod.hpp"
+#include "ilanta/hal/hw/gpiod.hpp"
 #include "ilanta/util/errors.hpp"
 
-#include <spdlog/fmt/bundled/core.h>
 #include <spdlog/spdlog.h>
 
 namespace ilanta {

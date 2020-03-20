@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ilanta/io/i2c.hpp"
+#include "ilanta/hal/hw/i2c.hpp"
 #include <cstdint>
 #include <optional>
 

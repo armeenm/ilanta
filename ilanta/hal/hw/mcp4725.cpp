@@ -1,5 +1,5 @@
-#include "ilanta/io/mcp4725.hpp"
-#include "ilanta/io/i2c.hpp"
+#include "ilanta/hal/hw/mcp4725.hpp"
+#include "ilanta/hal/hw/i2c.hpp"
 #include "ilanta/util/errors.hpp"
 
 #include <array>

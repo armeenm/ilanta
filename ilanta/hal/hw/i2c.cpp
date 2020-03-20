@@ -1,4 +1,4 @@
-#include "ilanta/io/i2c.hpp"
+#include "ilanta/hal/hw/i2c.hpp"
 #include <algorithm>
 #include <string_view>
 

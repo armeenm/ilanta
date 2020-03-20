@@ -72,6 +72,36 @@ target_link_libraries(ilanta PRIVATE
   gpiod::gpiodcxx)
 
 ################################################################################
+### Tests
+################################################################################
+
+find_package(Catch2 REQUIRED)
+
+file(GLOB_RECURSE TESTS
+  LIST_DIRECTORIES false
+  CONFIGURE_DEPENDS
+  "test/*.cpp")
+
+add_executable(tests ${TESTS})
+
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tests PRIVATE ubsan Catch2::Catch2 ilanta)
+target_compile_options(tests PRIVATE ${BUILD_OPTS})
+target_compile_features(tests PRIVATE cxx_std_20)
+
+if(${FORCE_COLORED_OUTPUT})
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(tests PRIVATE -fdiagnostics-color=always)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    target_compile_options(tests PRIVATE -fcolor-diagnostics)
+  endif()
+endif()
+
+include(CTest)
+include(Catch)
+catch_discover_tests(tests)
+
+################################################################################
 ### Installation
 ################################################################################
 

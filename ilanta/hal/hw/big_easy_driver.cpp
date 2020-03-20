@@ -1,6 +1,6 @@
-#include "ilanta/io/big_easy_driver.hpp"
+#include "ilanta/hal/hw/big_easy_driver.hpp"
 
-#include "ilanta/io/gpiod.hpp"
+#include "ilanta/hal/hw/gpiod.hpp"
 
 #include <chrono>
 #include <exception>

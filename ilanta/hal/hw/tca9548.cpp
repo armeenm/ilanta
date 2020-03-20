@@ -1,4 +1,4 @@
-#include "ilanta/io/tca9548.hpp"
+#include "ilanta/hal/hw/tca9548.hpp"
 #include "ilanta/util/errors.hpp"
 
 namespace ilanta {

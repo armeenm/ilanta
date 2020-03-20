@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ilanta/io/logic_level.hpp"
+#include "ilanta/hal/logic_level.hpp"
 #include <array>
 #include <gpiod.hpp>
 #include <optional>

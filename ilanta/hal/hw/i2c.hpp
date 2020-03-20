@@ -4,6 +4,7 @@
 #include <cerrno>
 #include <concepts>
 #include <cstdint>
+#include <fcntl.h>
 #include <filesystem>
 #include <optional>
 #include <span>
@@ -15,11 +16,12 @@
 namespace ilanta {
 
 namespace detail {
-#include <fcntl.h>
+extern "C" {
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+}
 } // namespace detail
 
 class I2C {
@@ -48,7 +50,7 @@ public:
 
     spdlog::info("Constructing I2C");
 
-    fd_ = detail::open(info_.path.c_str(), O_RDWR);
+    fd_ = open(info_.path.c_str(), O_RDWR);
     if (fd_ < 0)
       err_log_throw("Failed to open file: {}", std::strerror(errno));
   }
