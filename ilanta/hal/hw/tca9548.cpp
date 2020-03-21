@@ -1,6 +1,8 @@
 #include "ilanta/hal/hw/tca9548.hpp"
 #include "ilanta/util/errors.hpp"
 
+#include <spdlog/spdlog.h>
+
 namespace ilanta {
 
 TCA9548::TCA9548(I2C* const bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
