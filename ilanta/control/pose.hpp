@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cmath>
+#include <ostream>
+
+#include "ilanta/util/format.hpp"
 
 namespace ilanta {
 
@@ -38,12 +41,17 @@ public:
   auto constexpr z(float z) noexcept -> void { z_ = z; }
 
   // TODO: Make it constexpr...
-  auto l2norm() const -> float { return std::hypot(x_, y_, z_); }
+  [[nodiscard]] auto l2norm() const noexcept -> float { return std::hypot(x_, y_, z_); }
 
 private:
   float x_ = 0.0;
   float y_ = 0.0;
   float z_ = 0.0;
 };
+
+inline auto operator<<(std::ostream& os, PoseTL const& pose) -> std::ostream& {
+  os << format("Pose(x = {}, y = {}, z = {})", pose.x(), pose.y(), pose.z());
+  return os;
+}
 
 } // namespace ilanta
