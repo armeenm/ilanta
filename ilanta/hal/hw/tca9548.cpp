@@ -22,6 +22,6 @@ auto TCA9548::val(std::uint8_t const port) const -> bool {
 }
 
 auto TCA9548::addr() const noexcept -> std::uint16_t { return addr_; }
-auto TCA9548::addr(std::uint16_t addr) noexcept -> void { addr_ = addr; }
+auto TCA9548::addr(std::uint16_t const addr) noexcept -> void { addr_ = addr; }
 
 } // namespace ilanta
