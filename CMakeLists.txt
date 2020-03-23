@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12...3.17 FATAL_ERROR)
 project(ilanta
   VERSION 0.0.1
   DESCRIPTION "C++ library for Linux-based robotics platforms"
