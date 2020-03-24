@@ -32,6 +32,6 @@ private:
 
   I2C* bus_;
   std::uint16_t addr_;
-}
+};
 
 } // namespace ilanta
