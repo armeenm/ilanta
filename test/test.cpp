@@ -6,13 +6,13 @@
 #include <cmath>
 
 using namespace ilanta;
+using namespace Catch::literals;
 
 TEST_CASE("Mathematical operations can be performed on PoseTL objects", "[PoseTL]") {
   auto constexpr p1 = PoseTL{0.0f, 3.5f, 2.2f};
   auto constexpr p2 = PoseTL{1.1f, 5.6f, 10.1f};
 
-  REQUIRE(p1 + p2 == PoseTL{p1.x() + p2.x(), p1.y() + p2.y(), p1.z() + p2.z()});
-  REQUIRE(p1 - p2 == PoseTL{p1.x() - p2.x(), p1.y() - p2.y(), p1.z() - p2.z()});
-  REQUIRE(approx_equal(p1.l2norm(), std::sqrt(p1.x() * p1.x() + p1.y() * p1.y() + p1.z() * p1.z()),
-                       0.2f));
+  REQUIRE(p1 + p2 == PoseTL{0.0f + 1.1f, 3.5f + 5.6f, 2.2f + 10.1f});
+  REQUIRE(p1 + PoseTL{1.0f, 2.0f, 3.0f} < p2);
+  REQUIRE(p1.l2norm() == 4.13401_a);
 }
