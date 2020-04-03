@@ -8,7 +8,7 @@ namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(I2C*, std::uint16_t addr = DEFAULT_ADDR);
+  [[nodiscard]] PCA9685(I2C*, std::uint16_t addr = 0x40);
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -28,7 +28,43 @@ public:
   auto addr(std::uint16_t) noexcept -> void;
 
 private:
-  auto static constexpr DEFAULT_ADDR = std::uint16_t{0x40};
+  enum class Reg : std::uint8_t {
+    MODE1,
+    MODE2,
+    SUBADR1,
+    SUBADR2,
+    SUBADR3,
+    ALLCALLADR,
+    LED0_ON_L,
+    LED0_ON_H,
+    LED0_OFF_L,
+    LED0_OFF_H,
+    ALL_LED_ON_L = 0xFA,
+    ALL_LED_ON_H,
+    ALL_LED_OFF_L,
+    ALL_LED_OFF_H,
+    PRE_SCALE,
+    TESTMODE
+  };
+
+  enum class Mode1Reg : std::uint8_t {
+    ALLCALL = 0x01,
+    SUB3 = 0x02,
+    SUB2 = 0x04,
+    SUB1 = 0x08,
+    SLEEP = 0x10,
+    AI = 0x20,
+    EXTCLK = 0x40,
+    RESTART = 0x80
+  };
+
+  enum class Mode2Reg : std::uint8_t {
+    OUTNE_0 = 0x01,
+    OUTNE_1 = 0x02,
+    OUTDRV = 0x04,
+    OCH = 0x08,
+    INVRT = 0x10
+  };
 
   I2C* bus_;
   std::uint16_t addr_;

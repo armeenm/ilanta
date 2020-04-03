@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cerrno>
-#include <concepts>
 #include <cstdint>
 #include <fcntl.h>
 #include <filesystem>
@@ -10,6 +9,7 @@
 #include <span>
 #include <spdlog/spdlog.h>
 #include <system_error>
+#include <variant>
 #include <vector>
 
 #include "ilanta/util/errors.hpp"
@@ -70,6 +70,23 @@ public:
   [[nodiscard]] auto find_devs() const noexcept -> std::vector<std::uint16_t>;
 
   auto transfer(std::span<Message> data) const noexcept -> std::error_code;
+
+  auto send(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
+
+  template <typename T> auto send(std::uint16_t addr, T data, std::size_t size = sizeof(T)) {
+    return send(addr, {reinterpret_cast<std::uint8_t*>(&data), size});
+  }
+
+  auto recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
+
+  template <typename T, std::size_t Size = sizeof(T)>
+  auto recv(std::uint16_t addr) -> std::variant<T, std::error_code> {
+
+    auto const data = std::array<std::uint8_t, Size>{};
+    auto const err = recv(addr, data);
+
+    return err ? err : *reinterpret_cast<T>(data.data());
+  }
 
 private:
   Info info_;

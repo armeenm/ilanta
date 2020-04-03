@@ -14,6 +14,7 @@ namespace ilanta {
 template <typename E = std::runtime_error, typename... Ts>
 inline auto err_log_throw(std::string_view str,
                           Ts&&... args) requires std::constructible_from<E, std::string> {
+
   auto const err = format(str, std::forward<Ts>(args)...);
   spdlog::error(err);
   throw E{err};

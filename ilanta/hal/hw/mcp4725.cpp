@@ -32,10 +32,9 @@ auto MCP4725::val(std::uint16_t const val) const -> std::error_code {
   auto data =
       std::array{static_cast<std::uint8_t>(val >> 8), static_cast<std::uint8_t>(val & 0xFF)};
 
-  auto msg =
-      std::array{I2C::Message{.addr = addr_, .flags = 0, .len = data.size(), .buf = data.data()}};
+  auto msg = I2C::Message{.addr = addr_, .flags = 0, .len = data.size(), .buf = data.data()};
 
-  return bus_->transfer(msg);
+  return bus_->transfer({&msg, 1});
 }
 
 auto MCP4725::addr() const noexcept -> std::uint16_t { return addr_; }
