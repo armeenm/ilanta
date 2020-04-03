@@ -32,6 +32,7 @@ set(BUILD_OPTS
   -Wpedantic
   -pipe
   -flto
+  -fsanitize=address
   -fsanitize=undefined)
 
 file(GLOB_RECURSE SRCS
@@ -85,7 +86,7 @@ file(GLOB_RECURSE TESTS
 add_executable(tests ${TESTS})
 
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(tests PRIVATE ubsan Catch2::Catch2 ilanta)
+target_link_libraries(tests PRIVATE asan ubsan Catch2::Catch2 ilanta)
 target_compile_options(tests PRIVATE ${BUILD_OPTS})
 target_compile_features(tests PRIVATE cxx_std_20)
 

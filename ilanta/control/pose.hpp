@@ -53,7 +53,7 @@ public:
     return x_ * x_ + y_ * y_ + z_ * z_;
   }
 
-  [[nodiscard]] auto constexpr l2norm() const noexcept -> T { return ilanta::sqrt(l2sqnorm()); }
+  [[nodiscard]] auto constexpr l2norm() const noexcept -> T { return sqrt(l2sqnorm()); }
 
 private:
   T x_ = 0.0;
