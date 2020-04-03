@@ -5,12 +5,12 @@
 
 namespace ilanta {
 
-PCA9685::PCA9685(I2C* const bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
+PCA9685::PCA9685(I2C& bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
   spdlog::info("Constructing PCA9685");
 
   [[unlikely]] if (!bus_) err_log_throw("Invalid I2C bus");
 
-  bus_->send(0x00, 0x00);
+  bus_->send(addr_, std::array{0x00, 0x00});
 }
 
 auto PCA9685::addr() const noexcept -> std::uint16_t { return addr_; }

@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cerrno>
+#include <concepts>
 #include <cstdint>
 #include <fcntl.h>
 #include <filesystem>
@@ -71,7 +72,8 @@ public:
 
   auto transfer(std::span<Message> data) const noexcept -> std::error_code;
 
-  auto send(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
+  auto send(std::uint16_t addr, std::span<std::uint8_t const> data) const noexcept
+      -> std::error_code;
 
   template <typename T> auto send(std::uint16_t addr, T data, std::size_t size = sizeof(T)) {
     return send(addr, {reinterpret_cast<std::uint8_t*>(&data), size});
@@ -79,7 +81,7 @@ public:
 
   auto recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
 
-  template <typename T, std::size_t Size = sizeof(T)>
+  template <std::default_initializable T, std::size_t Size = sizeof(T)>
   auto recv(std::uint16_t addr) -> std::variant<T, std::error_code> {
 
     auto const data = std::array<std::uint8_t, Size>{};

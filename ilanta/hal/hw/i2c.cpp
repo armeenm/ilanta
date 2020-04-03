@@ -54,13 +54,15 @@ auto I2C::transfer(std::span<I2C::Message> data) const noexcept -> std::error_co
   return {};
 }
 
-auto I2C::send(std::uint16_t const addr, std::span<std::uint8_t> const data) const noexcept
+auto I2C::send(std::uint16_t const addr, std::span<std::uint8_t const> const data) const noexcept
     -> std::error_code {
 
   assert(data.size() <= std::numeric_limits<std::uint32_t>::max());
 
-  auto msg = Message{
-      .addr = addr, .flags = 0, .len = static_cast<detail::__u16>(data.size()), .buf = data.data()};
+  auto msg = Message{.addr = addr,
+                     .flags = 0,
+                     .len = static_cast<detail::__u16>(data.size()),
+                     .buf = const_cast<std::uint8_t*>(data.data())};
 
   return transfer({&msg, 1});
 }
