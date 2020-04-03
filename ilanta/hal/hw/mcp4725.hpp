@@ -3,6 +3,7 @@
 #include "ilanta/hal/hw/i2c.hpp"
 #include <cstdint>
 #include <optional>
+#include <system_error>
 
 namespace ilanta {
 
@@ -19,7 +20,7 @@ public:
   ~MCP4725() = default;
 
   [[nodiscard]] auto val() const -> std::optional<std::uint16_t>;
-  auto val(std::uint16_t) const -> bool;
+  auto val(std::uint16_t) const -> std::error_code;
 
   [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
   auto addr(std::uint16_t) noexcept -> void;

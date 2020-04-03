@@ -26,7 +26,7 @@ auto MCP4725::val() const -> std::optional<std::uint16_t> {
   return ((data[0] << 4) | (data[1] >> 4)) & 0xFF;
 }
 
-auto MCP4725::val(std::uint16_t const val) const -> bool {
+auto MCP4725::val(std::uint16_t const val) const -> std::error_code {
   assert(val >= 0 && val <= 4095);
 
   auto data =

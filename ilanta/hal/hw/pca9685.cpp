@@ -14,4 +14,4 @@ PCA9685::PCA9685(I2C* const bus, std::uint16_t const addr) : bus_(bus), addr_(ad
 auto PCA9685::addr() const noexcept -> std::uint16_t { return addr_; }
 auto PCA9685::addr(std::uint16_t const addr) noexcept -> void { addr_ = addr; }
 
-}
+} // namespace ilanta

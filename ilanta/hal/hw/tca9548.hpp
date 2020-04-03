@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ilanta/hal/hw/i2c.hpp"
+#include <system_error>
 
 namespace ilanta {
 
@@ -16,7 +17,7 @@ public:
 
   ~TCA9548() = default;
 
-  auto val(std::uint8_t port) const -> bool;
+  auto val(std::uint8_t port) const -> std::error_code;
 
   [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
   auto addr(std::uint16_t) noexcept -> void;

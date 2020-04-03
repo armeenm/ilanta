@@ -11,7 +11,7 @@ TCA9548::TCA9548(I2C* const bus, std::uint16_t const addr) : bus_(bus), addr_(ad
   [[unlikely]] if (!bus) err_log_throw("Invalid I2C bus");
 }
 
-auto TCA9548::val(std::uint8_t const port) const -> bool {
+auto TCA9548::val(std::uint8_t const port) const -> std::error_code {
   assert(port < 8);
 
   auto data = std::array{static_cast<std::uint8_t>(1 << port)};

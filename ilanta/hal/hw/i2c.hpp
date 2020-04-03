@@ -9,6 +9,7 @@
 #include <optional>
 #include <span>
 #include <spdlog/spdlog.h>
+#include <system_error>
 #include <vector>
 
 #include "ilanta/util/errors.hpp"
@@ -68,7 +69,7 @@ public:
 
   [[nodiscard]] auto find_devs() const noexcept -> std::vector<std::uint16_t>;
 
-  auto transfer(std::span<Message> data) const noexcept -> bool;
+  auto transfer(std::span<Message> data) const noexcept -> std::error_code;
 
 private:
   Info info_;

@@ -40,18 +40,18 @@ auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
   return ret;
 }
 
-auto I2C::transfer(std::span<I2C::Message> data) const noexcept -> bool {
-  assert(data.size() <= UINT32_MAX);
+auto I2C::transfer(std::span<I2C::Message> data) const noexcept -> std::error_code {
+  assert(data.size() <= std::numeric_limits<std::uint32_t>::max());
 
   auto const ioctl_data =
       detail::i2c_rdwr_ioctl_data{data.data(), static_cast<detail::__u32>(data.size())};
 
   if (detail::ioctl(fd_, I2C_RDWR, &ioctl_data) < 0) {
     spdlog::error("Failed to transfer I2C data: {}", std::strerror(errno));
-    return true;
+    return errno_to_err_code(errno);
   }
 
-  return false;
+  return {};
 }
 
 } // namespace ilanta
