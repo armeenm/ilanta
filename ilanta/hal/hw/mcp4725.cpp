@@ -8,10 +8,8 @@
 
 namespace ilanta {
 
-MCP4725::MCP4725(I2C* const bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
+MCP4725::MCP4725(I2C& bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
   spdlog::info("Constructing MCP4725");
-
-  [[unlikely]] if (!bus) err_log_throw("Invalid I2C bus");
 }
 
 auto MCP4725::val() const -> std::optional<std::uint16_t> {
@@ -19,7 +17,7 @@ auto MCP4725::val() const -> std::optional<std::uint16_t> {
   auto msg = std::array{
       I2C::Message{.addr = addr_, .flags = I2C::READ, .len = data.size(), .buf = data.data()}};
 
-  if (bus_->transfer(msg))
+  if (bus_.transfer(msg))
     return std::nullopt;
 
   // Reconstruct 12-bit value
@@ -34,7 +32,7 @@ auto MCP4725::val(std::uint16_t const val) const -> std::error_code {
 
   auto msg = I2C::Message{.addr = addr_, .flags = 0, .len = data.size(), .buf = data.data()};
 
-  return bus_->transfer({&msg, 1});
+  return bus_.transfer({&msg, 1});
 }
 
 auto MCP4725::addr() const noexcept -> std::uint16_t { return addr_; }

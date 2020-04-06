@@ -7,7 +7,7 @@ namespace ilanta {
 
 class TCA9548 {
 public:
-  [[nodiscard]] TCA9548(I2C*, std::uint16_t addr = DEFAULT_ADDR);
+  [[nodiscard]] TCA9548(I2C&, std::uint16_t addr = DEFAULT_ADDR);
 
   TCA9548(TCA9548 const&) = delete;
   [[nodiscard]] TCA9548(TCA9548&&) noexcept = default;
@@ -25,7 +25,7 @@ public:
 private:
   auto static constexpr DEFAULT_ADDR = std::uint16_t{0x70};
 
-  I2C* bus_;
+  I2C& bus_;
   std::uint16_t addr_;
 };
 

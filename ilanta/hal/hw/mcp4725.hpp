@@ -9,7 +9,7 @@ namespace ilanta {
 
 class MCP4725 {
 public:
-  [[nodiscard]] MCP4725(I2C*, std::uint16_t addr = DEFAULT_ADDR);
+  [[nodiscard]] MCP4725(I2C&, std::uint16_t addr = DEFAULT_ADDR);
 
   MCP4725(MCP4725 const&) = delete;
   [[nodiscard]] MCP4725(MCP4725&&) noexcept = default;
@@ -28,7 +28,7 @@ public:
 private:
   auto static constexpr DEFAULT_ADDR = std::uint16_t{0x62};
 
-  I2C* bus_;
+  I2C& bus_;
   std::uint16_t addr_;
 };
 

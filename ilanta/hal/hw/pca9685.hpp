@@ -8,7 +8,7 @@ namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(I2C*, std::uint16_t addr = 0x40);
+  [[nodiscard]] PCA9685(I2C&, std::uint16_t addr = 0x40);
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -66,7 +66,7 @@ private:
     INVRT = 0x10
   };
 
-  I2C* bus_;
+  I2C& bus_;
   std::uint16_t addr_;
 };
 
