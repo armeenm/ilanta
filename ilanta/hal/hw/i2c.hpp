@@ -72,22 +72,38 @@ public:
 
   auto transfer(std::span<Message> data) const noexcept -> std::error_code;
 
+  /* Sending */
+
   auto send(std::uint16_t addr, std::span<std::uint8_t const> data) const noexcept
       -> std::error_code;
 
-  template <typename T> auto send(std::uint16_t addr, T data, std::size_t size = sizeof(T)) {
-    return send(addr, {reinterpret_cast<std::uint8_t*>(&data), size});
+  template <typename T> auto send(std::uint16_t addr, T data) {
+    return send(addr, {reinterpret_cast<std::uint8_t*>(&data), sizeof(T)});
   }
+
+  /* Receiving */
 
   auto recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
 
-  template <std::default_initializable T, std::size_t Size = sizeof(T)>
-  auto recv(std::uint16_t addr) -> std::variant<T, std::error_code> {
+  template <std::default_initializable T>
+  [[nodiscard]] auto recv(std::uint16_t addr) -> std::variant<T, std::error_code> {
 
-    auto const data = std::array<std::uint8_t, Size>{};
+    auto const data = std::array<std::uint8_t, sizeof(T)>{};
     auto const err = recv(addr, data);
 
     return err ? err : *reinterpret_cast<T>(data.data());
+  }
+
+  /* Send/Receive */
+
+  auto send_recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept
+      -> std::error_code;
+
+  template <std::default_initializable Recv, typename Send>
+  [[nodiscard]] auto send_recv(std::uint16_t addr, Send data) const noexcept
+      -> std::variant<Recv, std::error_code> {
+
+    return send(addr, data) ?: recv<Recv>(addr);
   }
 
 private:

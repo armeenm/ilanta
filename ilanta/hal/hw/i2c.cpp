@@ -79,4 +79,10 @@ auto I2C::recv(std::uint16_t const addr, std::span<std::uint8_t> const data) con
   return transfer({&msg, 1});
 }
 
+auto I2C::send_recv(std::uint16_t const addr, std::span<std::uint8_t> const data) const noexcept
+    -> std::error_code {
+
+  return send(addr, data) ?: recv(addr, data);
+}
+
 } // namespace ilanta
