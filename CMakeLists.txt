@@ -15,7 +15,7 @@ option(STATIC_ANALYSIS
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED SHARED)
-find_package(gpiod REQUIRED MODULE)
+find_package(gpiodcxx REQUIRED MODULE)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -70,7 +70,7 @@ endif()
 target_link_libraries(ilanta PRIVATE
   ubsan
   spdlog::spdlog
-  gpiod::gpiodcxx)
+  gpiodcxx::gpiodcxx)
 
 ################################################################################
 ### Tests
@@ -148,6 +148,11 @@ install(FILES
 configure_file(
   ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiod.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/Findgpiod.cmake
+  COPYONLY)
+
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiodcxx.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
   COPYONLY)
 
 export(EXPORT ilanta-targets
