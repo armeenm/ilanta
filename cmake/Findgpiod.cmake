@@ -1,5 +1,5 @@
 find_package(PkgConfig)
-pkg_check_modules(PC_gpiod QUIET gpiod gpiodcxx)
+pkg_check_modules(PC_gpiod QUIET gpiod)
 
 find_path(gpiod_INCLUDE_DIR
   NAMES gpiod.h
