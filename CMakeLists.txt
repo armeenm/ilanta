@@ -19,6 +19,12 @@ find_package(gpiodcxx REQUIRED MODULE)
 
 set(BUILD_OPTS 
   -Wshadow
+  -Warray-bounds
+  -Wzero-length-bounds
+  -Wstring-compare
+  -Wstringop-overflow
+  -Wmismatched-tags
+  -Wredundant-tags
   -Wduplicated-cond
   -Wlogical-op
   -Wduplicated-branches
