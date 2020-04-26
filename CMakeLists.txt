@@ -16,6 +16,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED SHARED)
 find_package(gpiodcxx REQUIRED MODULE)
+find_package(tensorflow_cc REQUIRED MODULE)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -23,8 +24,8 @@ set(BUILD_OPTS
   -Wzero-length-bounds
   -Wstring-compare
   -Wstringop-overflow
-  -Wmismatched-tags
-  -Wredundant-tags
+  #-Wmismatched-tags
+  #-Wredundant-tags
   -Wduplicated-cond
   -Wlogical-op
   -Wduplicated-branches
@@ -76,7 +77,8 @@ endif()
 target_link_libraries(ilanta PRIVATE
   ubsan
   spdlog::spdlog
-  gpiodcxx::gpiodcxx)
+  gpiodcxx::gpiodcxx
+  tensorflow_cc::tensorflow_cc)
 
 ################################################################################
 ### Tests
