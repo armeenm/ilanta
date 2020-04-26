@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.12...3.17 FATAL_ERROR)
+
+include(cmake/BuildType.cmake)
+include(cmake/ExportCompileCommands.cmake)
+
 project(ilanta
   VERSION 0.0.1
   DESCRIPTION "C++ library for Linux-based robotics platforms"
@@ -60,7 +64,7 @@ target_include_directories(ilanta
 target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
-if(${FORCE_COLORED_OUTPUT})
+if(${FORCE_COLORED_OUTPUT} OR ${CMAKE_GENERATOR} EQUAL "Ninja")
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(ilanta PRIVATE -fdiagnostics-color=always)
   elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -154,13 +158,13 @@ install(FILES
   DESTINATION ${INSTALL_CONFIGDIR})
 
 configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiod.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiod.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiodcxx.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
   COPYONLY)
 
 configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiodcxx.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findtensorflow_cc.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow_cc.cmake
   COPYONLY)
 
 export(EXPORT ilanta-targets
