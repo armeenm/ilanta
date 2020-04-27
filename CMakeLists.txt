@@ -71,6 +71,12 @@ target_link_libraries(ilanta PRIVATE
   gpiodcxx::gpiodcxx
   TensorFlow_DEP)
 
+set_target_properties(ilanta PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  SOVERSION 1
+  INTERFACE_ilanta_MAJOR_VERSION 0
+  COMPATIBLE_INTERFACE_STRING ilanta_MAJOR_VERSION)
+
 if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(ilanta PRIVATE -fdiagnostics-color=always)
@@ -103,10 +109,10 @@ target_link_libraries(tests PRIVATE asan ubsan Catch2::Catch2 ilanta)
 target_compile_options(tests PRIVATE ${BUILD_OPTS})
 target_compile_features(tests PRIVATE cxx_std_20)
 
-if(${FORCE_COLORED_OUTPUT})
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(tests PRIVATE -fdiagnostics-color=always)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(tests PRIVATE -fcolor-diagnostics)
   endif()
 endif()
@@ -127,7 +133,7 @@ install(TARGETS ilanta
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-set_target_properties(ilanta PROPERTIES EXPORT_NAME ilanta)
+set_target_properties(ilanta PROPERTIES EXPORT_NAME Ilanta)
 
 install(
   DIRECTORY ilanta/
@@ -135,12 +141,9 @@ install(
   FILES_MATCHING PATTERN "*.hpp")
 
 install(EXPORT ilanta-targets
-  FILE
-  IlantaTargets.cmake
-  NAMESPACE
-  Ilanta::
-  DESTINATION
-  ${INSTALL_CONFIGDIR})
+  FILE IlantaTargets.cmake
+  NAMESPACE Ilanta::
+  DESTINATION ${INSTALL_CONFIGDIR})
 
 include(CMakePackageConfigHelpers)
 
@@ -149,14 +152,10 @@ write_basic_package_version_file(
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY AnyNewerVersion)
 
-configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/IlantaConfig.cmake.in
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/IlantaConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
   INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
-
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
-  DESTINATION ${INSTALL_CONFIGDIR})
 
 configure_file(
   ${CMAKE_CURRENT_LIST_DIR}/cmake/Findgpiodcxx.cmake
@@ -168,10 +167,21 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/FindTensorFlow.cmake
   COPYONLY)
 
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/FindTensorFlow.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow.cmake
+  COPYONLY)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/FindTensorFlow.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
+  DESTINATION ${INSTALL_CONFIGDIR})
+
 export(EXPORT ilanta-targets
-  FILE 
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaTargets.cmake
-  NAMESPACE 
-  Ilanta::)
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/IlantaTargets.cmake
+  NAMESPACE Ilanta::)
 
 export(PACKAGE Ilanta)
