@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15...3.17 FATAL_ERROR)
 
 include(cmake/BuildType.cmake)
 include(cmake/ExportCompileCommands.cmake)
@@ -16,11 +16,12 @@ option(STATIC_ANALYSIS
   "Enable static analysis tools"
   OFF)
 
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED SHARED)
 find_package(gpiodcxx REQUIRED MODULE)
-find_package(tensorflow_cc REQUIRED MODULE)
+find_package(TensorFlow 2.0 REQUIRED MODULE)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -49,10 +50,10 @@ set(BUILD_OPTS
 file(GLOB_RECURSE SRCS
   LIST_DIRECTORIES false
   CONFIGURE_DEPENDS
-  "ilanta/*.cpp")
+  "${CMAKE_SOURCE_DIR}/ilanta/*.cpp")
 
 add_library(ilanta SHARED ${SRCS})
-add_library(Ilanta::ilanta ALIAS ilanta)
+add_library(Ilanta::Ilanta ALIAS ilanta)
 
 target_include_directories(ilanta
   PUBLIC
@@ -64,25 +65,25 @@ target_include_directories(ilanta
 target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
-if(${FORCE_COLORED_OUTPUT} OR ${CMAKE_GENERATOR} EQUAL "Ninja")
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(ilanta PRIVATE -fdiagnostics-color=always)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    target_compile_options(ilanta PRIVATE -fcolor-diagnostics)
-  endif()
-endif()
-
-if(${STATIC_ANALYSIS})
-  set_target_properties(ilanta PROPERTIES
-    CXX_CLANG_TIDY "clang-tidy;-checks=*;-header-filter=.*"
-    CXX_CPPCHECK "cppcheck;--std=c++11")
-endif()
-
 target_link_libraries(ilanta PRIVATE
   ubsan
   spdlog::spdlog
   gpiodcxx::gpiodcxx
-  tensorflow_cc::tensorflow_cc)
+  TensorFlow_DEP)
+
+if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(ilanta PRIVATE -fdiagnostics-color=always)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(ilanta PRIVATE -fcolor-diagnostics)
+  endif()
+endif()
+
+if(STATIC_ANALYSIS)
+  set_target_properties(ilanta PROPERTIES
+    CXX_CLANG_TIDY "clang-tidy;-checks=*;-header-filter=.*"
+    CXX_CPPCHECK "cppcheck;--std=c++11")
+endif()
 
 ################################################################################
 ### Tests
@@ -163,8 +164,8 @@ configure_file(
   COPYONLY)
 
 configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findtensorflow_cc.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow_cc.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/FindTensorFlow.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/FindTensorFlow.cmake
   COPYONLY)
 
 export(EXPORT ilanta-targets
