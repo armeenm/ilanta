@@ -18,10 +18,10 @@ option(STATIC_ANALYSIS
 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(fmt REQUIRED)
-find_package(spdlog REQUIRED SHARED)
-find_package(gpiodcxx REQUIRED MODULE)
-find_package(TensorFlow 2.0 REQUIRED MODULE)
+find_package(fmt 6 REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(gpiodcxx REQUIRED)
+find_package(tensorrt 7 REQUIRED)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -50,8 +50,6 @@ file(GLOB_RECURSE SRCS
   CONFIGURE_DEPENDS
   "${CMAKE_SOURCE_DIR}/ilanta/*.cpp")
 
-message(STATUS "Tensorflow deps: ${TensorFlow_INCLUDE_DIR}")
-
 add_library(ilanta SHARED ${SRCS})
 add_library(Ilanta::Ilanta ALIAS ilanta)
 
@@ -73,7 +71,7 @@ endif()
 
 target_link_libraries(ilanta 
   PRIVATE
-  TensorFlow::TensorFlow
+  tensorrt::tensorrt
   spdlog::spdlog
   gpiodcxx::gpiodcxx)
 
@@ -169,19 +167,13 @@ configure_file(
   COPYONLY)
 
 configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/FindTensorFlow.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/FindTensorFlow.cmake
-  COPYONLY)
-
-configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/FindTensorFlow.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findtensorrt.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorrt.cmake
   COPYONLY)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/FindTensorFlow.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorflow.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorrt.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
   DESTINATION ${INSTALL_CONFIGDIR})
