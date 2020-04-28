@@ -12,7 +12,7 @@ namespace tf = tensorflow;
 
 class TFModel {
 public:
-  TFModel(std::string_view model_dir);
+  [[nodiscard]] TFModel(std::string_view model_dir);
 
   TFModel(TFModel const&) = default;
   TFModel(TFModel&&) noexcept = default;

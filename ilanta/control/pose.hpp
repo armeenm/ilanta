@@ -15,7 +15,8 @@ namespace ilanta {
  */
 template <Arithmetic T = float> class PoseTL {
 public:
-  [[nodiscard]] constexpr PoseTL(T x, T y, T z) : x_(x), y_(y), z_(z) {}
+  [[nodiscard]] constexpr explicit PoseTL() noexcept {}
+  [[nodiscard]] constexpr PoseTL(T x, T y, T z) noexcept : x_{x}, y_{y}, z_{z} {}
 
   constexpr PoseTL(PoseTL<T> const&) = default;
   constexpr PoseTL(PoseTL<T>&&) = default;

@@ -1,4 +1,4 @@
-#include "ilanta/ml/tf_model.h"
+#include "ilanta/ml/tf_model.hpp"
 
 #include <fmt/core.h>
 #include <stdexcept>

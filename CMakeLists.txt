@@ -43,9 +43,7 @@ set(BUILD_OPTS
   -Wconversion
   -Wpedantic
   -pipe
-  -flto
-  -fsanitize=address
-  -fsanitize=undefined)
+  -flto)
 
 file(GLOB_RECURSE SRCS
   LIST_DIRECTORIES false
@@ -55,6 +53,7 @@ file(GLOB_RECURSE SRCS
 add_library(ilanta SHARED ${SRCS})
 add_library(Ilanta::Ilanta ALIAS ilanta)
 
+target_include_directories(ilanta SYSTEM PUBLIC /usr/include/tensorflow)
 target_include_directories(ilanta
   PUBLIC
   $<INSTALL_INTERFACE:include>
@@ -62,14 +61,20 @@ target_include_directories(ilanta
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
-target_link_libraries(ilanta PRIVATE
-  ubsan
+target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
+
+if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+  target_compile_options(ilanta PRIVATE -fsanitize=address -fsanitize=undefined)
+  target_link_libraries(ilanta PRIVATE asan ubsan)
+endif()
+
+target_link_libraries(ilanta 
+  PRIVATE
+  TensorFlow_DEP
   spdlog::spdlog
-  gpiodcxx::gpiodcxx
-  TensorFlow_DEP)
+  gpiodcxx::gpiodcxx)
 
 set_target_properties(ilanta PROPERTIES
   VERSION ${PROJECT_VERSION}
