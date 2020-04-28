@@ -4,11 +4,10 @@ include(CMakeFindDependencyMacro)
 
 message(STATUS "${Ilanta_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${Ilanta_CMAKE_DIR}")
-find_dependency(gpiodcxx REQUIRED MODULE)
-find_dependency(TensorFlow REQUIRED MODULE)
+find_dependency(gpiodcxx REQUIRED)
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
-find_dependency(spdlog REQUIRED CONFIG)
+find_dependency(spdlog REQUIRED)
 
 if(NOT TARGET Ilanta::Ilanta)
   include("${Ilanta_CMAKE_DIR}/IlantaTargets.cmake")

@@ -18,10 +18,8 @@ option(STATIC_ANALYSIS
 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(fmt 6 REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(gpiodcxx REQUIRED)
-find_package(tensorrt 7 REQUIRED)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -71,7 +69,6 @@ endif()
 
 target_link_libraries(ilanta 
   PRIVATE
-  tensorrt::tensorrt
   spdlog::spdlog
   gpiodcxx::gpiodcxx)
 
@@ -166,14 +163,8 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
   COPYONLY)
 
-configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/Findtensorrt.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorrt.cmake
-  COPYONLY)
-
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/Findtensorrt.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
   DESTINATION ${INSTALL_CONFIGDIR})
