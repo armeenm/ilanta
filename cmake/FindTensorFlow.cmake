@@ -334,15 +334,16 @@ target_link_libraries(TensorFlow_DEP INTERFACE -Wl,--allow-multiple-definition -
 target_link_libraries(TensorFlow_DEP INTERFACE -Wl,--allow-multiple-definition -Wl,--whole-archive ${TensorFlow_LIBRARY} -Wl,--no-whole-archive)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(
-  TENSORFLOW
-  FOUND_VAR TENSORFLOW_FOUND
-  REQUIRED_VARS
-    TensorFlow_LIBRARY
-    TensorFlow_INCLUDE_DIR
-  VERSION_VAR
-    TensorFlow_VERSION
-  )
+find_package_handle_standard_args(TensorFlow
+  REQUIRED_VARS TensorFlow_LIBRARY TensorFlow_INCLUDE_DIR
+  VERSION_VAR TensorFlow_VERSION)
+
+if(TensorFlow_FOUND AND NOT TARGET TensorFlow::TensorFlow)
+  add_library(TensorFlow::TensorFlow SHARED IMPORTED)
+  set_target_properties(TensorFlow::TensorFlow PROPERTIES
+    IMPORTED_LOCATION "${TensorFlow_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${TensorFlow_INCLUDE_DIR}")
+endif()
 
 mark_as_advanced(TF_INFORMATION_STRING TF_DETECTED_VERSION TF_DETECTED_VERSION_MAJOR TF_DETECTED_VERSION_MINOR TF_DETECTED_VERSION TF_DETECTED_ABI
                  TF_DETECTED_INCLUDE_DIR TF_DETECTED_LIBRARY TF_DISABLE_ASSERTS

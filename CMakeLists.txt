@@ -50,10 +50,11 @@ file(GLOB_RECURSE SRCS
   CONFIGURE_DEPENDS
   "${CMAKE_SOURCE_DIR}/ilanta/*.cpp")
 
+message(STATUS "Tensorflow deps: ${TensorFlow_INCLUDE_DIR}")
+
 add_library(ilanta SHARED ${SRCS})
 add_library(Ilanta::Ilanta ALIAS ilanta)
 
-target_include_directories(ilanta SYSTEM PUBLIC ${TensorFlow_DEP})
 target_include_directories(ilanta
   PUBLIC
   $<INSTALL_INTERFACE:include>
@@ -72,7 +73,7 @@ endif()
 
 target_link_libraries(ilanta 
   PRIVATE
-  TensorFlow_DEP
+  TensorFlow::TensorFlow
   spdlog::spdlog
   gpiodcxx::gpiodcxx)
 
