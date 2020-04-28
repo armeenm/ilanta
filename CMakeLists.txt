@@ -53,7 +53,7 @@ file(GLOB_RECURSE SRCS
 add_library(ilanta SHARED ${SRCS})
 add_library(Ilanta::Ilanta ALIAS ilanta)
 
-target_include_directories(ilanta SYSTEM PUBLIC /usr/include/tensorflow)
+target_include_directories(ilanta SYSTEM PUBLIC ${TensorFlow_DEP})
 target_include_directories(ilanta
   PUBLIC
   $<INSTALL_INTERFACE:include>
