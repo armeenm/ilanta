@@ -1,4 +1,5 @@
 #include "ilanta/ml/ml_model.hpp"
+#include "ilanta/ml/generic_buffer.h"
 #include "ilanta/ml/util.h"
 
 #include <NvInfer.h>
