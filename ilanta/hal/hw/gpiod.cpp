@@ -5,8 +5,9 @@
 
 namespace ilanta {
 
-auto request_output(gpiod::line const& l, std::string_view consumer, bool invert, int default_val)
-    -> void {
+auto request_output(gpiod::line const& l, std::string_view consumer, bool const invert,
+                    int const default_val) -> void {
+
   spdlog::info("Requesting line '{}' with offset {}", l.name(), l.offset());
 
   if (l.is_used())

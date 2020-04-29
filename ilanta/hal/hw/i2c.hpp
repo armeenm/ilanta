@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <cerrno>
 #include <concepts>
 #include <cstdint>
@@ -103,7 +102,9 @@ public:
   [[nodiscard]] auto send_recv(std::uint16_t addr, Send data) const noexcept
       -> std::variant<Recv, std::error_code> {
 
-    return send(addr, data) ?: recv<Recv>(addr);
+    auto const err = send(addr, data);
+
+    return err ? err : recv<Recv>(addr);
   }
 
 private:
