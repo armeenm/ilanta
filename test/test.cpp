@@ -2,8 +2,8 @@
 
 #include "ilanta/control/pose.hpp"
 #include "ilanta/math/util.hpp"
+
 #include <catch2/catch.hpp>
-#include <cmath>
 
 using namespace ilanta;
 using namespace Catch::literals;

@@ -21,7 +21,7 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(spdlog REQUIRED)
 find_package(gpiodcxx REQUIRED)
 
-set(BUILD_OPTS 
+set(COMPILER_WARNINGS 
   -Wshadow
   -Warray-bounds
   -Wzero-length-bounds
@@ -60,7 +60,7 @@ target_include_directories(ilanta
 
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
-target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
+target_compile_options(ilanta PRIVATE "${COMPILER_WARNINGS}" -flto)
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   target_compile_options(ilanta PRIVATE -fsanitize=address -fsanitize=undefined)
@@ -106,8 +106,8 @@ file(GLOB_RECURSE TESTS
 add_executable(tests ${TESTS})
 
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(tests PRIVATE asan ubsan Catch2::Catch2 ilanta)
-target_compile_options(tests PRIVATE ${BUILD_OPTS})
+target_link_libraries(tests PRIVATE Catch2::Catch2 ilanta)
+target_compile_options(tests PRIVATE "${COMPILER_WARNINGS}")
 target_compile_features(tests PRIVATE cxx_std_20)
 
 if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
