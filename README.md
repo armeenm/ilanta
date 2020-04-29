@@ -1,5 +1,5 @@
 # Requirements
-C++20, fmtlib, spdlog, tensorflow, gpiod (with C++ bindings)
+C++20, spdlog, libtorch, gpiod (with C++ bindings)
 
 # Building
 
