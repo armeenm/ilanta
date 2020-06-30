@@ -49,7 +49,7 @@ public:
   [[nodiscard]] I2C(T&& path) requires std::convertible_to<T, std::filesystem::path>
       : info_{std::forward<T>(path)} {
 
-    spdlog::info("Constructing I2C");
+    spdlog::debug("Constructing I2C");
 
     fd_ = open(info_.path.c_str(), O_RDWR);
     if (fd_ < 0)

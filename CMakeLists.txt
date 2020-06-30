@@ -21,7 +21,7 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(spdlog REQUIRED)
 find_package(gpiodcxx REQUIRED)
 
-set(COMPILER_WARNINGS 
+set(BUILD_OPTS 
   -Wshadow
   -Warray-bounds
   -Wzero-length-bounds
@@ -60,7 +60,7 @@ target_include_directories(ilanta
 
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
-target_compile_options(ilanta PRIVATE "${COMPILER_WARNINGS}" -flto)
+target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   target_compile_options(ilanta PRIVATE -fsanitize=address -fsanitize=undefined)

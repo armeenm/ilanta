@@ -66,7 +66,7 @@ private:
     INVRT = 0x10
   };
 
-  I2C& bus_;
+  I2C* bus_;
   std::uint16_t addr_;
 };
 
