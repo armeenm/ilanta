@@ -28,7 +28,7 @@ public:
 private:
   auto static constexpr DEFAULT_ADDR = std::uint16_t{0x62};
 
-  I2C& bus_;
+  I2C* bus_;
   std::uint16_t addr_;
 };
 

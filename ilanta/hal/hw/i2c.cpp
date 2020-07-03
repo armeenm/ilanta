@@ -2,18 +2,26 @@
 #include <algorithm>
 #include <cassert>
 #include <string_view>
+#include <fmt/core.h>
 
 namespace ilanta {
 
 auto I2C::find_buses() noexcept -> std::vector<I2C::Info> {
-  auto constexpr DIR_PREFIX = "/dev/";
-  auto constexpr FILE_PREFIX = std::string_view{"i2c-"};
+  using namespace std::literals;
+
+  auto constexpr dir_prefix = "/dev/"sv;
+  auto constexpr file_prefix = "i2c-"sv;
 
   auto ret = std::vector<Info>{};
 
-  for (auto const& entry : std::filesystem::directory_iterator{DIR_PREFIX})
-    if (!std::strncmp(entry.path().c_str(), FILE_PREFIX.data(), FILE_PREFIX.size()))
-      ret.push_back({entry.path()});
+  for (auto const& entry : std::filesystem::directory_iterator{dir_prefix}) {
+    auto const cmp = std::strncmp(entry.path().filename().c_str(),
+                                 file_prefix.data(),
+                                 file_prefix.size());
+
+    if (cmp == 0)
+      ret.emplace_back(entry.path());
+  }
 
   return ret;
 }
@@ -35,7 +43,7 @@ auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
                            Message{.addr = addr, .flags = READ, .len = 0, .buf = nullptr}};
 
     if (!transfer(data))
-      ret.push_back(addr);
+      ret.emplace_back(addr);
   }
 
   return ret;
