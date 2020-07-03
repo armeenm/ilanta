@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.15...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15...3.18 FATAL_ERROR)
+
+list(PREPEND CMAKE_PREFIX_PATH
+    ${CMAKE_BINARY_DIR})
+  list(PREPEND CMAKE_MODULE_PATH
+      ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(cmake/BuildType.cmake)
 include(cmake/ExportCompileCommands.cmake)
@@ -16,9 +21,8 @@ option(STATIC_ANALYSIS
   "Enable static analysis tools"
   OFF)
 
-list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-
-find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED CONFIG)
+find_package(spdlog REQUIRED CONFIG)
 find_package(gpiodcxx REQUIRED)
 
 set(BUILD_OPTS 
@@ -49,7 +53,7 @@ file(GLOB_RECURSE SRCS
   "${CMAKE_SOURCE_DIR}/ilanta/*.cpp")
 
 add_library(ilanta SHARED ${SRCS})
-add_library(Ilanta::Ilanta ALIAS ilanta)
+add_library(ilanta::ilanta ALIAS ilanta)
 
 target_include_directories(ilanta
   PUBLIC
@@ -69,6 +73,7 @@ endif()
 
 target_link_libraries(ilanta 
   PRIVATE
+  fmt::fmt
   spdlog::spdlog
   gpiodcxx::gpiodcxx)
 
@@ -127,14 +132,14 @@ catch_discover_tests(tests)
 ################################################################################
 
 include(GNUInstallDirs)
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/Ilanta)
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/ilanta)
 
 install(TARGETS ilanta
   EXPORT ilanta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-set_target_properties(ilanta PROPERTIES EXPORT_NAME Ilanta)
+set_target_properties(ilanta PROPERTIES EXPORT_NAME ilanta)
 
 install(
   DIRECTORY ilanta/
@@ -142,20 +147,20 @@ install(
   FILES_MATCHING PATTERN "*.hpp")
 
 install(EXPORT ilanta-targets
-  FILE IlantaTargets.cmake
-  NAMESPACE Ilanta::
+  FILE ilantaTargets.cmake
+  NAMESPACE ilanta::
   DESTINATION ${INSTALL_CONFIGDIR})
 
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ilantaConfigVersion.cmake
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY AnyNewerVersion)
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/IlantaConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/ilantaConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ilantaConfig.cmake
   INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
 
 configure_file(
@@ -165,12 +170,12 @@ configure_file(
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/Findgpiodcxx.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfig.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/IlantaConfigVersion.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ilantaConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ilantaConfigVersion.cmake
   DESTINATION ${INSTALL_CONFIGDIR})
 
 export(EXPORT ilanta-targets
-  FILE ${CMAKE_CURRENT_BINARY_DIR}/IlantaTargets.cmake
-  NAMESPACE Ilanta::)
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/ilantaTargets.cmake
+  NAMESPACE ilanta::)
 
-export(PACKAGE Ilanta)
+export(PACKAGE ilanta)
