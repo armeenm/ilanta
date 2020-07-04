@@ -1,17 +1,19 @@
 cmake_minimum_required(VERSION 3.15...3.18 FATAL_ERROR)
 
+
 list(PREPEND CMAKE_PREFIX_PATH
     ${CMAKE_BINARY_DIR})
   list(PREPEND CMAKE_MODULE_PATH
       ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-include(cmake/BuildType.cmake)
-include(cmake/ExportCompileCommands.cmake)
-
 project(ilanta
   VERSION 0.0.1
   DESCRIPTION "C++ library for Linux-based robotics platforms"
   LANGUAGES CXX)
+
+if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
+  set(CMAKE_DEFAULT_BUILD_TYPE "Release")
+endif()
 
 option(FORCE_COLORED_OUTPUT
   "Always produce ANSI-colored output (GNU/Clang only)" 
@@ -24,6 +26,8 @@ option(STATIC_ANALYSIS
 find_package(fmt REQUIRED CONFIG)
 find_package(spdlog REQUIRED CONFIG)
 find_package(gpiodcxx REQUIRED)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(BUILD_OPTS 
   -Wshadow
@@ -83,12 +87,10 @@ set_target_properties(ilanta PROPERTIES
   INTERFACE_ilanta_MAJOR_VERSION 0
   COMPATIBLE_INTERFACE_STRING ilanta_MAJOR_VERSION)
 
-if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(ilanta PRIVATE -fdiagnostics-color=always)
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(ilanta PRIVATE -fcolor-diagnostics)
-  endif()
+if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR MATCHES "^Ninja")
+  target_compile_options(ilanta PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
+    $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>)
 endif()
 
 if(STATIC_ANALYSIS)
