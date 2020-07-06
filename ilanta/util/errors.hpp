@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ilanta/util/format.hpp"
+#include "ilanta/util/result.hpp"
 
 #include <concepts>
 #include <exception>

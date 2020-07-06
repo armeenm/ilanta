@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ilanta/hal/hw/i2c.hpp"
+#include "ilanta/util/result.hpp"
 
 #include <cstdint>
 
@@ -8,7 +9,8 @@ namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(I2C&, std::uint16_t addr = 0x40);
+  [[nodiscard]] PCA9685(I2C& i2c) : PCA9685{i2c, 0x40} {};
+  [[nodiscard]] PCA9685(I2C&, std::uint16_t addr);
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -18,56 +20,61 @@ public:
 
   ~PCA9685() = default;
 
-  [[nodiscard]] auto freq() const noexcept -> std::uint16_t;
-  auto freq(std::uint16_t) noexcept -> bool;
+  auto reset() const noexcept -> void;
 
-  [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> std::uint8_t;
-  auto duty_cycle(std::uint8_t channel, std::uint8_t duty_cycle) -> bool;
+  [[nodiscard]] auto freq() const noexcept -> std::uint16_t;
+  auto freq(std::uint16_t) noexcept -> std::error_code;
+
+  [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> Result<std::uint16_t, std::error_code>;
+  auto duty_cycle(std::uint8_t channel, std::uint16_t duty_cycle) -> std::error_code;
 
   [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
   auto addr(std::uint16_t) noexcept -> void;
 
 private:
-  enum class Reg : std::uint8_t {
-    MODE1,
-    MODE2,
-    SUBADR1,
-    SUBADR2,
-    SUBADR3,
-    ALLCALLADR,
-    LED0_ON_L,
-    LED0_ON_H,
-    LED0_OFF_L,
-    LED0_OFF_H,
-    ALL_LED_ON_L = 0xFA,
-    ALL_LED_ON_H,
-    ALL_LED_OFF_L,
-    ALL_LED_OFF_H,
-    PRE_SCALE,
-    TESTMODE
+  enum Reg : std::uint8_t {
+    Mode1,
+    Mode2,
+    SubAdr1,
+    SubAdr2,
+    SubAdr3,
+    AllCallAdr,
+    Chan0OnL,
+    Chan0OnH,
+    Chan0OffL,
+    Chan0OffH,
+    AllChanOnL = 0xFA,
+    AllChanOnH,
+    AllChanOffL,
+    AllChanOffH,
+    PreScale,
+    TestMode
   };
 
-  enum class Mode1Reg : std::uint8_t {
-    ALLCALL = 0x01,
-    SUB3 = 0x02,
-    SUB2 = 0x04,
-    SUB1 = 0x08,
-    SLEEP = 0x10,
-    AI = 0x20,
-    EXTCLK = 0x40,
-    RESTART = 0x80
+  enum Mode1Reg : std::uint8_t {
+    AllCall = 0x01,
+    Sub3 = 0x02,
+    Sub2 = 0x04,
+    Sub1 = 0x08,
+    Sleep = 0x10,
+    Ai = 0x20,
+    Extclk = 0x40,
+    Restart = 0x80
   };
 
-  enum class Mode2Reg : std::uint8_t {
-    OUTNE_0 = 0x01,
-    OUTNE_1 = 0x02,
-    OUTDRV = 0x04,
+  enum Mode2Reg : std::uint8_t {
+    OutNE_0 = 0x01,
+    OutNE_1 = 0x02,
+    OutDrv = 0x04,
     OCH = 0x08,
-    INVRT = 0x10
+    Invrt = 0x10
   };
+
+  auto constexpr static inline clock_freq = 25000000.0;
 
   I2C* bus_;
   std::uint16_t addr_;
+  std::uint16_t freq_;
 };
 
 } // namespace ilanta

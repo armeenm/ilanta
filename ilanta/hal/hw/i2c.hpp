@@ -9,10 +9,10 @@
 #include <span>
 #include <spdlog/spdlog.h>
 #include <system_error>
-#include <variant>
 #include <vector>
 
 #include "ilanta/util/errors.hpp"
+#include "ilanta/util/result.hpp"
 
 namespace ilanta {
 
@@ -41,7 +41,7 @@ public:
   };
 
   using Message = detail::i2c_msg;
-  /* struct i2c_msg { __u16 addr, flags, len; __u8* buf } */
+  // struct i2c_msg { __u16 addr, flags, len; __u8* buf } //
 
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<Info>;
 
@@ -69,43 +69,32 @@ public:
 
   [[nodiscard]] auto find_devs() const noexcept -> std::vector<std::uint16_t>;
 
+  // Raw transfer //
   auto transfer(std::span<Message> data) const noexcept -> std::error_code;
 
-  /* Sending */
-
-  auto send(std::uint16_t addr, std::span<std::uint8_t const> data) const noexcept
+  // Write //
+  auto write(std::uint16_t addr, std::span<std::uint8_t const> bytes) const noexcept
       -> std::error_code;
+  auto write(std::uint16_t addr, std::uint8_t bytes...) const noexcept -> std::error_code;
 
-  template <typename T> auto send(std::uint16_t addr, T data) {
-    return send(addr, {reinterpret_cast<std::uint8_t*>(&data), sizeof(T)});
-  }
+  // Read //
+  auto read(std::uint16_t addr, std::span<std::uint8_t const> in,
+            std::span<std::uint8_t> out) const noexcept -> std::error_code;
 
-  /* Receiving */
+  [[nodiscard]] auto read(std::uint16_t addr, std::size_t read_count,
+                          std::span<std::uint8_t const> bytes) const noexcept
+      -> Result<std::vector<std::uint8_t>, std::error_code>;
 
-  auto recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept -> std::error_code;
+  [[nodiscard]] auto read(std::uint16_t addr, std::size_t read_count,
+                          std::uint8_t bytes...) const noexcept
+      -> Result<std::vector<std::uint8_t>, std::error_code>;
 
-  template <std::default_initializable T>
-  [[nodiscard]] auto recv(std::uint16_t addr) -> std::variant<T, std::error_code> {
+  [[nodiscard]] auto read_byte(std::uint16_t addr,
+                               std::span<std::uint8_t const> bytes) const noexcept
+      -> Result<std::uint8_t, std::error_code>;
 
-    auto const data = std::array<std::uint8_t, sizeof(T)>{};
-    auto const err = recv(addr, data);
-
-    return err ? err : *reinterpret_cast<T>(data.data());
-  }
-
-  /* Send/Receive */
-
-  auto send_recv(std::uint16_t addr, std::span<std::uint8_t> data) const noexcept
-      -> std::error_code;
-
-  template <std::default_initializable Recv, typename Send>
-  [[nodiscard]] auto send_recv(std::uint16_t addr, Send data) const noexcept
-      -> std::variant<Recv, std::error_code> {
-
-    auto const err = send(addr, data);
-
-    return err ? err : recv<Recv>(addr);
-  }
+  [[nodiscard]] auto read_byte(std::uint16_t addr, std::uint8_t bytes...) const noexcept
+      -> Result<std::uint8_t, std::error_code>;
 
 private:
   Info info_;

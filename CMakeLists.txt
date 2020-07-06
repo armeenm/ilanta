@@ -47,7 +47,6 @@ set(BUILD_OPTS
   -Wall
   -Wextra
   -Wconversion
-  -Wpedantic
   -pipe
   -flto)
 
