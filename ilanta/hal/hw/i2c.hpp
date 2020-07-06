@@ -29,9 +29,10 @@ class I2C {
 public:
   struct Info {
     std::filesystem::path path;
+    unsigned long funcs;
   };
 
-  enum Flag {
+  enum Flag : std::uint16_t {
     READ = I2C_M_RD,
     ADDR_TEN = I2C_M_TEN,
     NO_RD_ACK = I2C_M_NO_RD_ACK,
@@ -43,18 +44,9 @@ public:
   using Message = detail::i2c_msg;
   // struct i2c_msg { __u16 addr, flags, len; __u8* buf } //
 
-  [[nodiscard]] static auto find_buses() noexcept -> std::vector<Info>;
+  [[nodiscard]] static auto find_buses() noexcept -> std::vector<std::filesystem::path>;
 
-  template <typename T>
-  [[nodiscard]] I2C(T&& path) requires std::convertible_to<T, std::filesystem::path>
-      : info_{std::forward<T>(path)} {
-
-    spdlog::debug("Constructing I2C");
-
-    fd_ = open(info_.path.c_str(), O_RDWR);
-    if (fd_ < 0)
-      err_log_throw("Failed to open file: {}", std::strerror(errno));
-  }
+  [[nodiscard]] I2C(std::filesystem::path const&); 
 
   I2C(I2C const&) = delete;
   I2C(I2C&&) noexcept = default;

@@ -19,6 +19,7 @@ template <Enum E> constexpr auto underlying_cast(E e) {
 
 template <typename...> constexpr std::false_type always_false{};
 template <typename... Ts> struct Overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> Overloaded(Ts...) -> Overloaded<Ts...>;
 
 struct Unit {};
 

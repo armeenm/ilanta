@@ -32,6 +32,11 @@ public:
 
     return std::get<0>(*this);
   }
+
+  template <typename Visitor>
+  auto constexpr visit(Visitor&& visitor) const {
+    return std::visit(visitor, *static_cast<variant_type const*>(this));
+  }
 };
 
 } // namespace ilanta

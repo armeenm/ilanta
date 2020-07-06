@@ -1,28 +1,44 @@
 #include "ilanta/hal/hw/i2c.hpp"
+
+#include "ilanta/util/generics.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <fmt/core.h>
 #include <string_view>
+#include <spdlog/spdlog.h>
 
 namespace ilanta {
 
-auto I2C::find_buses() noexcept -> std::vector<I2C::Info> {
+auto I2C::find_buses() noexcept -> std::vector<std::filesystem::path> {
   using namespace std::literals;
 
   auto constexpr dir_prefix = "/dev/"sv;
   auto constexpr file_prefix = "i2c-"sv;
 
-  auto ret = std::vector<Info>{};
+  auto ret = std::vector<std::filesystem::path>{};
 
-  for (auto const& entry : std::filesystem::directory_iterator{dir_prefix}) {
+  for (auto const& entry: std::filesystem::directory_iterator{dir_prefix}) {
     auto const cmp =
         std::strncmp(entry.path().filename().c_str(), file_prefix.data(), file_prefix.size());
 
     if (cmp == 0)
-      ret.emplace_back(entry.path());
+      ret.emplace_back(entry);
   }
 
   return ret;
+}
+
+I2C::I2C(std::filesystem::path const& path) : info_{std::move(path), 0UL} {
+  fd_ = open(info_.path.c_str(), O_RDWR);
+
+  if (fd_ < 0)
+    err_log_throw("Failed to open file '{}' for I2C device: {}",
+      info_.path.string(), std::strerror(errno));
+
+  if (detail::ioctl(fd_, I2C_FUNCS, &info_.funcs) < 0)
+    err_log_throw("Failed to retrieve functionality of I2C device '{}': {}",
+      info_.path.string(), std::strerror(errno));
 }
 
 I2C::~I2C() { detail::close(fd_); }
@@ -32,16 +48,27 @@ auto I2C::fd() const noexcept -> int { return fd_; }
 
 // TODO: Eventually figure out 10-bit addressing...
 auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
-  auto constexpr min_addr_7 = 0x08;
-  auto constexpr max_addr_7 = 0x77;
+  auto constexpr min_addr = 0x03;
+  auto constexpr max_addr = 0x77;
 
   auto ret = std::vector<std::uint16_t>{};
 
-  for (std::uint16_t addr = min_addr_7; addr <= max_addr_7; ++addr) {
-    auto err = read(addr, {}, {});
+  for (std::uint16_t addr = min_addr; addr <= max_addr; ++addr) {
+    spdlog::debug("Finding device at address {}", addr);
 
-    if (!err)
-      ret.emplace_back(addr);
+    if (detail::ioctl(fd_, I2C_SLAVE, addr) < 0) {
+      spdlog::debug("Failed to set slave address to {}: {}", addr, std::strerror(errno));
+      continue;
+    }
+
+    /*
+    if (detail::i2c_smbus_write_quick(fd_, I2C_SMBUS_WRITE) < 0) {
+      spdlog::debug("Could not write to {}: {}", addr, std::strerror(errno));
+      continue;
+    }
+    */
+
+    ret.emplace_back(addr);
   }
 
   return ret;
