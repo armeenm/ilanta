@@ -9,8 +9,8 @@ namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(SMBus& bus) : PCA9685{bus, 0x40} {};
-  [[nodiscard]] PCA9685(SMBus&, std::uint16_t addr);
+  [[nodiscard]] PCA9685(SMBus&& bus) : PCA9685{std::move(bus), 0x40} {};
+  [[nodiscard]] PCA9685(SMBus&&, std::uint16_t addr);
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -32,7 +32,7 @@ public:
   auto addr(std::uint16_t) noexcept -> void;
 
 private:
-  SMBus* bus_;
+  SMBus bus_;
   std::uint16_t addr_;
   std::uint16_t freq_;
 };
