@@ -7,8 +7,48 @@
 
 namespace ilanta {
 
+enum Reg : std::uint8_t {
+  Mode1,
+  Mode2,
+  SubAdr1,
+  SubAdr2,
+  SubAdr3,
+  AllCallAdr,
+  Chan0OnL,
+  Chan0OnH,
+  Chan0OffL,
+  Chan0OffH,
+  AllChanOnL = 0xFA,
+  AllChanOnH,
+  AllChanOffL,
+  AllChanOffH,
+  PreScale,
+  TestMode
+};
+
+enum Mode1Reg : std::uint8_t {
+  AllCall = 0x01,
+  Sub3 = 0x02,
+  Sub2 = 0x04,
+  Sub1 = 0x08,
+  Sleep = 0x10,
+  Ai = 0x20,
+  Extclk = 0x40,
+  Restart = 0x80
+};
+
+enum Mode2Reg : std::uint8_t {
+  OutNE_0 = 0x01,
+  OutNE_1 = 0x02,
+  OutDrv = 0x04,
+  OCH = 0x08,
+  Invrt = 0x10
+};
+
+auto constexpr inline clock_freq = 25000000.0;
+
 auto constexpr chan_reg_offset(std::uint8_t channel) -> std::uint8_t {
-  return std::uint8_t(4U * (channel - 1U));
+  return std::uint8_t(4U * channel);
 }
 
 PCA9685::PCA9685(SMBus& bus, std::uint16_t const addr) : bus_{&bus}, addr_{addr} {
@@ -52,16 +92,20 @@ auto PCA9685::duty_cycle(std::uint8_t const channel) -> Result<std::uint16_t, st
 auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cycle)
     -> std::error_code {
 
+  assert(duty_cycle >= 0U && duty_cycle < 4096U);
+
   auto const offset = chan_reg_offset(channel);
+
+  spdlog::debug("Duty cycle: {}", duty_cycle);
 
   auto send = [=, this](std::uint8_t reg, unsigned int val) {
     return bus_->write_byte(addr_, std::uint8_t(reg + offset), std::uint8_t(val));
   };
 
-  auto e = send(Reg::Chan0OnL, duty_cycle & 0xFFU);
-  e = e ?: send(Reg::Chan0OnH, duty_cycle >> 8U);
-  e = e ?: send(Reg::Chan0OffL, 0U);
-  e = e ?: send(Reg::Chan0OffH, 0U);
+  auto e = send(Reg::Chan0OffL, duty_cycle & 0xFFU);
+  e = e ?: send(Reg::Chan0OffH, duty_cycle >> 8U);
+  e = e ?: send(Reg::Chan0OnL, 0U);
+  e = e ?: send(Reg::Chan0OnH, 0U);
 
   return e;
 }

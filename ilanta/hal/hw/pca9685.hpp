@@ -32,46 +32,6 @@ public:
   auto addr(std::uint16_t) noexcept -> void;
 
 private:
-  enum Reg : std::uint8_t {
-    Mode1,
-    Mode2,
-    SubAdr1,
-    SubAdr2,
-    SubAdr3,
-    AllCallAdr,
-    Chan0OnL,
-    Chan0OnH,
-    Chan0OffL,
-    Chan0OffH,
-    AllChanOnL = 0xFA,
-    AllChanOnH,
-    AllChanOffL,
-    AllChanOffH,
-    PreScale,
-    TestMode
-  };
-
-  enum Mode1Reg : std::uint8_t {
-    AllCall = 0x01,
-    Sub3 = 0x02,
-    Sub2 = 0x04,
-    Sub1 = 0x08,
-    Sleep = 0x10,
-    Ai = 0x20,
-    Extclk = 0x40,
-    Restart = 0x80
-  };
-
-  enum Mode2Reg : std::uint8_t {
-    OutNE_0 = 0x01,
-    OutNE_1 = 0x02,
-    OutDrv = 0x04,
-    OCH = 0x08,
-    Invrt = 0x10
-  };
-
-  auto constexpr static inline clock_freq = 25000000.0;
-
   SMBus* bus_;
   std::uint16_t addr_;
   std::uint16_t freq_;

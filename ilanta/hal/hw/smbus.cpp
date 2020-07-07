@@ -52,9 +52,10 @@ auto SMBus::find_devs() const noexcept -> std::vector<std::uint16_t> {
 }
 
 auto SMBus::addr(std::uint16_t const addr) const noexcept -> std::error_code {
-  detail::ioctl(fd_, I2C_SLAVE, addr);
-
-  return errno_to_err_code(errno);
+  if (detail::ioctl(fd_, I2C_SLAVE, addr) < 0)
+    return errno_to_err_code(errno);
+  else
+    return {};
 }
 
 auto SMBus::read_byte(std::uint16_t const adr) const noexcept
