@@ -146,7 +146,7 @@ set_target_properties(ilanta PROPERTIES EXPORT_NAME ilanta)
 install(
   DIRECTORY ilanta/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ilanta
-  FILES_MATCHING PATTERN "*.hpp")
+  FILES_MATCHING PATTERN "*.h*")
 
 install(EXPORT ilanta-targets
   FILE ilantaTargets.cmake
