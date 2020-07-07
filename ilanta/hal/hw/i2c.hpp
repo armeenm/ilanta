@@ -18,8 +18,8 @@ namespace ilanta {
 
 namespace detail {
 extern "C" {
+#include "ilanta/third_party/smbus.h"
 #include <linux/i2c-dev.h>
-#include <linux/i2c.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 }
@@ -46,7 +46,7 @@ public:
 
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<std::filesystem::path>;
 
-  [[nodiscard]] I2C(std::filesystem::path const&); 
+  [[nodiscard]] I2C(std::filesystem::path const&);
 
   I2C(I2C const&) = delete;
   I2C(I2C&&) noexcept = default;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ilanta/hal/hw/i2c.hpp"
+#include "ilanta/hal/hw/smbus.hpp"
 #include "ilanta/util/result.hpp"
 
 #include <cstdint>
@@ -9,8 +9,8 @@ namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(I2C& i2c) : PCA9685{i2c, 0x40} {};
-  [[nodiscard]] PCA9685(I2C&, std::uint16_t addr);
+  [[nodiscard]] PCA9685(SMBus& bus) : PCA9685{bus, 0x40} {};
+  [[nodiscard]] PCA9685(SMBus&, std::uint16_t addr);
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -72,7 +72,7 @@ private:
 
   auto constexpr static inline clock_freq = 25000000.0;
 
-  I2C* bus_;
+  SMBus* bus_;
   std::uint16_t addr_;
   std::uint16_t freq_;
 };

@@ -78,7 +78,8 @@ target_link_libraries(ilanta
   PRIVATE
   fmt::fmt
   spdlog::spdlog
-  gpiodcxx::gpiodcxx)
+  gpiodcxx::gpiodcxx
+  i2c)
 
 set_target_properties(ilanta PROPERTIES
   VERSION ${PROJECT_VERSION}

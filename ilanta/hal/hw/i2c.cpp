@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <cassert>
 #include <fmt/core.h>
-#include <string_view>
 #include <spdlog/spdlog.h>
+#include <string_view>
 
 namespace ilanta {
 
@@ -18,7 +18,7 @@ auto I2C::find_buses() noexcept -> std::vector<std::filesystem::path> {
 
   auto ret = std::vector<std::filesystem::path>{};
 
-  for (auto const& entry: std::filesystem::directory_iterator{dir_prefix}) {
+  for (auto const& entry : std::filesystem::directory_iterator{dir_prefix}) {
     auto const cmp =
         std::strncmp(entry.path().filename().c_str(), file_prefix.data(), file_prefix.size());
 
@@ -33,12 +33,12 @@ I2C::I2C(std::filesystem::path const& path) : info_{std::move(path), 0UL} {
   fd_ = open(info_.path.c_str(), O_RDWR);
 
   if (fd_ < 0)
-    err_log_throw("Failed to open file '{}' for I2C device: {}",
-      info_.path.string(), std::strerror(errno));
+    err_log_throw("Failed to open file '{}' for I2C device: {}", info_.path.string(),
+                  std::strerror(errno));
 
   if (detail::ioctl(fd_, I2C_FUNCS, &info_.funcs) < 0)
-    err_log_throw("Failed to retrieve functionality of I2C device '{}': {}",
-      info_.path.string(), std::strerror(errno));
+    err_log_throw("Failed to retrieve functionality of I2C device '{}': {}", info_.path.string(),
+                  std::strerror(errno));
 }
 
 I2C::~I2C() { detail::close(fd_); }
@@ -61,12 +61,7 @@ auto I2C::find_devs() const noexcept -> std::vector<std::uint16_t> {
       continue;
     }
 
-    /*
-    if (detail::i2c_smbus_write_quick(fd_, I2C_SMBUS_WRITE) < 0) {
-      spdlog::debug("Could not write to {}: {}", addr, std::strerror(errno));
-      continue;
-    }
-    */
+    // TODO: Revert to old way of checking here
 
     ret.emplace_back(addr);
   }
