@@ -1,25 +1,21 @@
 #include "ilanta/hal/hw/tca9548.hpp"
-#include "ilanta/util/errors.hpp"
 
-#include <spdlog/spdlog.h>
+#include <cassert>
 
 namespace ilanta {
 
-TCA9548::TCA9548(I2C& bus, std::uint16_t const addr) : bus_(bus), addr_(addr) {
-  spdlog::info("Constructing TCA9548");
-}
+TCA9548::TCA9548(SMBus&& bus, std::uint16_t const addr_in) : bus_{std::move(bus)} { addr(addr_in); }
 
 auto TCA9548::val(std::uint8_t const port) const -> std::error_code {
-  assert(port < 8);
+  assert(port < 8U);
 
-  auto data = std::array{static_cast<std::uint8_t>(1 << port)};
-  auto msg =
-      std::array{I2C::Message{.addr = addr_, .flags = 0, .len = data.size(), .buf = data.data()}};
+  // TODO: Implement
 
-  return bus_.transfer(msg);
+  return {};
 }
 
-auto TCA9548::addr() const noexcept -> std::uint16_t { return addr_; }
-auto TCA9548::addr(std::uint16_t const addr) noexcept -> void { addr_ = addr; }
+auto TCA9548::addr(std::uint16_t const addr) const noexcept -> std::error_code {
+  return bus_.addr(addr);
+}
 
 } // namespace ilanta

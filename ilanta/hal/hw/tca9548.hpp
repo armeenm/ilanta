@@ -1,13 +1,15 @@
 #pragma once
 
-#include "ilanta/hal/hw/i2c.hpp"
-#include <system_error>
+#include "ilanta/hal/hw/smbus.hpp"
+
+#include <cstdint>
 
 namespace ilanta {
 
 class TCA9548 {
 public:
-  [[nodiscard]] TCA9548(I2C&, std::uint16_t addr = DEFAULT_ADDR);
+  [[nodiscard]] TCA9548(SMBus&& bus) : TCA9548{std::move(bus), 0x70} {}
+  [[nodiscard]] TCA9548(SMBus&& bus, std::uint16_t addr);
 
   TCA9548(TCA9548 const&) = delete;
   [[nodiscard]] TCA9548(TCA9548&&) noexcept = default;
@@ -18,15 +20,10 @@ public:
   ~TCA9548() = default;
 
   auto val(std::uint8_t port) const -> std::error_code;
-
-  [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
-  auto addr(std::uint16_t) noexcept -> void;
+  auto addr(std::uint16_t) const noexcept -> std::error_code;
 
 private:
-  auto static constexpr DEFAULT_ADDR = std::uint16_t{0x70};
-
-  I2C& bus_;
-  std::uint16_t addr_;
+  SMBus bus_;
 };
 
 } // namespace ilanta

@@ -4,12 +4,13 @@
 #include "ilanta/util/result.hpp"
 
 #include <cstdint>
+#include <system_error>
 
 namespace ilanta {
 
 class PCA9685 {
 public:
-  [[nodiscard]] PCA9685(SMBus&& bus) : PCA9685{std::move(bus), 0x40} {};
+  [[nodiscard]] PCA9685(SMBus&& bus) : PCA9685{std::move(bus), 0x40} {}
   [[nodiscard]] PCA9685(SMBus&&, std::uint16_t addr);
 
   PCA9685(PCA9685 const&) = delete;
@@ -28,12 +29,10 @@ public:
   [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> Result<std::uint16_t, std::error_code>;
   auto duty_cycle(std::uint8_t channel, std::uint16_t duty_cycle) -> std::error_code;
 
-  [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
-  auto addr(std::uint16_t) noexcept -> void;
+  auto addr(std::uint16_t) const noexcept -> std::error_code;
 
 private:
   SMBus bus_;
-  std::uint16_t addr_;
   std::uint16_t freq_;
 };
 

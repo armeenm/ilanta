@@ -51,7 +51,8 @@ auto constexpr chan_reg_offset(std::uint8_t channel) -> std::uint8_t {
   return std::uint8_t(4U * channel);
 }
 
-PCA9685::PCA9685(SMBus&& bus, std::uint16_t const addr) : bus_{std::move(bus)}, addr_{addr} {
+PCA9685::PCA9685(SMBus&& bus, std::uint16_t const addr_in) : bus_{std::move(bus)} {
+  addr(addr_in);
   reset();
   freq(1000U);
 }
@@ -79,6 +80,8 @@ auto PCA9685::freq(std::uint16_t const freq) noexcept -> std::error_code {
 }
 
 auto PCA9685::duty_cycle(std::uint8_t const channel) -> Result<std::uint16_t, std::error_code> {
+  assert(channel < 16U);
+
   auto const offset = chan_reg_offset(channel);
 
   auto val = std::uint16_t{bus_.read_byte(Reg::Chan0OffH + offset).unwrap()};
@@ -110,7 +113,8 @@ auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cy
   return e;
 }
 
-auto PCA9685::addr() const noexcept -> std::uint16_t { return addr_; }
-auto PCA9685::addr(std::uint16_t const addr) noexcept -> void { addr_ = addr; }
+auto PCA9685::addr(std::uint16_t const addr) const noexcept -> std::error_code {
+  return bus_.addr(addr);
+}
 
 } // namespace ilanta
