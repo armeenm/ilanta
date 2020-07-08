@@ -1,15 +1,18 @@
 #pragma once
 
-#include "ilanta/hal/hw/i2c.hpp"
+#include "ilanta/hal/hw/smbus.hpp"
+#include "ilanta/util/result.hpp"
+
 #include <cstdint>
-#include <optional>
 #include <system_error>
+#include <utility>
 
 namespace ilanta {
 
 class MCP4725 {
 public:
-  [[nodiscard]] MCP4725(I2C&, std::uint16_t addr = DEFAULT_ADDR);
+  [[nodiscard]] MCP4725(SMBus bus) : MCP4725{std::move(bus), 0x62} {}
+  [[nodiscard]] MCP4725(SMBus, std::uint16_t addr);
 
   MCP4725(MCP4725 const&) = delete;
   [[nodiscard]] MCP4725(MCP4725&&) noexcept = default;
@@ -19,17 +22,13 @@ public:
 
   ~MCP4725() = default;
 
-  [[nodiscard]] auto val() const -> std::optional<std::uint16_t>;
-  auto val(std::uint16_t) const -> std::error_code;
+  auto addr(std::uint16_t) const noexcept -> std::error_code;
 
-  [[nodiscard]] auto addr() const noexcept -> std::uint16_t;
-  auto addr(std::uint16_t) noexcept -> void;
+  [[nodiscard]] auto val() const noexcept -> Result<std::uint16_t, std::error_code>;
+  auto val(std::uint16_t) const noexcept -> std::error_code;
 
 private:
-  auto static constexpr DEFAULT_ADDR = std::uint16_t{0x62};
-
-  I2C* bus_;
-  std::uint16_t addr_;
+  SMBus bus_;
 };
 
 } // namespace ilanta

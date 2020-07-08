@@ -19,7 +19,7 @@ public:
 
   ~TCA9548() = default;
 
-  auto val(std::uint8_t port) const -> std::error_code;
+  auto port(std::uint8_t) const noexcept -> std::error_code;
   auto addr(std::uint16_t) const noexcept -> std::error_code;
 
 private:

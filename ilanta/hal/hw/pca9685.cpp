@@ -47,14 +47,13 @@ enum Mode2Reg : std::uint8_t {
 
 auto constexpr inline clock_freq = 25000000.0;
 
-auto constexpr chan_reg_offset(std::uint8_t channel) -> std::uint8_t {
+auto constexpr chan_reg_offset(std::uint8_t const channel) -> std::uint8_t {
   return std::uint8_t(4U * channel);
 }
 
-PCA9685::PCA9685(SMBus&& bus, std::uint16_t const addr_in) : bus_{std::move(bus)} {
+PCA9685::PCA9685(SMBus bus, std::uint16_t const addr_in) : bus_{std::move(bus)} {
   addr(addr_in);
   reset();
-  freq(1000U);
 }
 
 auto PCA9685::reset() const noexcept -> void {
@@ -62,19 +61,17 @@ auto PCA9685::reset() const noexcept -> void {
   bus_.write_byte(Reg::Mode2, 0x04); // Push-pull
 }
 
-auto PCA9685::freq() const noexcept -> std::uint16_t { return freq_; }
+auto PCA9685::addr(std::uint16_t const addr) const noexcept -> std::error_code {
+  return bus_.addr(addr);
+}
 
-auto PCA9685::freq(std::uint16_t const freq) noexcept -> std::error_code {
-
+auto PCA9685::freq(std::uint16_t const freq) const noexcept -> std::error_code {
   auto const prescale = static_cast<std::uint8_t>((clock_freq / 4096.0 / freq) - 1.0);
 
   auto e = bus_.write_byte(Reg::Mode1, 0x10);        // Sleep
   e = e ?: bus_.write_byte(Reg::PreScale, prescale); // PWM multiplier
   e = e ?: bus_.write_byte(Reg::Mode1, 0x80);        // Restart
   e = e ?: bus_.write_byte(Reg::Mode2, 0x04);        // Push-pull
-
-  if (!e)
-    freq_ = freq;
 
   return e;
 }
@@ -96,6 +93,7 @@ auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cy
     -> std::error_code {
 
   assert(duty_cycle >= 0U && duty_cycle < 4096U);
+  assert(channel < 16U);
 
   auto const offset = chan_reg_offset(channel);
 
@@ -111,10 +109,6 @@ auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cy
   e = e ?: send(Reg::Chan0OnH, 0U);
 
   return e;
-}
-
-auto PCA9685::addr(std::uint16_t const addr) const noexcept -> std::error_code {
-  return bus_.addr(addr);
 }
 
 } // namespace ilanta
