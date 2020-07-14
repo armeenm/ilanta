@@ -91,18 +91,24 @@ auto SMBus::read_word(std::uint8_t const cmd) const noexcept
 }
 
 auto SMBus::write_byte(std::uint8_t const val) const noexcept -> std::error_code {
-
-  return errno_to_err_code(detail::i2c_smbus_write_byte(fd_, val));
+  if (detail::i2c_smbus_write_byte(fd_, val))
+    return errno_to_err_code(errno);
+  else
+    return {};
 }
 
 auto SMBus::write_byte(std::uint8_t cmd, std::uint8_t val) const noexcept -> std::error_code {
-
-  return errno_to_err_code(detail::i2c_smbus_write_byte_data(fd_, cmd, val));
+  if (detail::i2c_smbus_write_byte_data(fd_, cmd, val))
+    return errno_to_err_code(errno);
+  else
+    return {};
 }
 
 auto SMBus::write_word(std::uint8_t cmd, std::uint16_t val) const noexcept -> std::error_code {
-
-  return errno_to_err_code(detail::i2c_smbus_write_word_data(fd_, cmd, val));
+  if (detail::i2c_smbus_write_word_data(fd_, cmd, val))
+    return errno_to_err_code(errno);
+  else
+    return {};
 }
 
 } // namespace ilanta

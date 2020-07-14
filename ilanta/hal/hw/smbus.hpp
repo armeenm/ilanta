@@ -26,11 +26,11 @@ public:
   [[nodiscard]] SMBus(unsigned int bus_num);
   [[nodiscard]] SMBus(std::filesystem::path const&);
 
-  SMBus(SMBus const&) = delete;
-  SMBus(SMBus&&) noexcept = default;
+  SMBus(SMBus const&);
+  SMBus(SMBus&&) noexcept;
 
-  auto operator=(SMBus const&) -> SMBus& = delete;
-  auto operator=(SMBus &&) -> SMBus& = default;
+  auto operator=(SMBus const&) -> SMBus&;
+  auto operator=(SMBus &&) -> SMBus&;
 
   ~SMBus();
 
@@ -54,8 +54,9 @@ public:
   auto write_word(std::uint8_t cmd, std::uint16_t val) const noexcept -> std::error_code;
 
 private:
-  unsigned long funcs_;
+  std::filesystem::path path_;
   int fd_;
+  unsigned long funcs_;
 };
 
 } // namespace ilanta

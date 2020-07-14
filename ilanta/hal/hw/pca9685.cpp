@@ -69,6 +69,8 @@ auto PCA9685::freq(std::uint16_t const freq) const noexcept -> std::error_code {
   auto const prescale = static_cast<std::uint8_t>((clock_freq / 4096.0 / freq) - 1.0);
 
   auto e = bus_.write_byte(Reg::Mode1, 0x10);        // Sleep
+  if (e)
+    throw std::runtime_error(fmt::format("Failed! {} // fd: {}", e.message(), bus_.native_handle()));
   e = e ?: bus_.write_byte(Reg::PreScale, prescale); // PWM multiplier
   e = e ?: bus_.write_byte(Reg::Mode1, 0x80);        // Restart
   e = e ?: bus_.write_byte(Reg::Mode2, 0x04);        // Push-pull
