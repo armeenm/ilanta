@@ -8,7 +8,7 @@ namespace ilanta {
 auto request_output(gpiod::line const& l, std::string_view consumer, bool const invert,
                     int const default_val) -> void {
 
-  spdlog::info("Requesting line '{}' with offset {}", l.name(), l.offset());
+  spdlog::debug("Requesting line '{}' with offset {}", l.name(), l.offset());
 
   if (l.is_used())
     spdlog::warn("Line {} is in use by consumer '{}'", l.offset(), l.consumer());
@@ -20,7 +20,7 @@ auto request_output(gpiod::line const& l, std::string_view consumer, bool const 
   if (!l.is_requested())
     err_log_throw("Failed to request line {}", l.offset());
 
-  spdlog::info("Successfully requested line {}", l.offset());
+  spdlog::debug("Successfully requested line {}", l.offset());
 }
 
 } // namespace ilanta
