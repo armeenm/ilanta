@@ -102,8 +102,6 @@ auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cy
 
   auto const offset = chan_reg_offset(channel);
 
-  spdlog::debug("Duty cycle: {}", duty_cycle);
-
   auto send = [=, this](std::uint8_t reg, unsigned int val) {
     return write_byte(std::uint8_t(reg + offset), std::uint8_t(val));
   };
