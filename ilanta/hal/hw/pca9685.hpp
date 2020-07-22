@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ilanta/hal/hw/smbus.hpp"
+#include "ilanta/hal/hw/i2cdevice.hpp"
 #include "ilanta/util/result.hpp"
 
 #include <cstdint>
@@ -9,10 +9,9 @@
 
 namespace ilanta {
 
-class PCA9685 {
+class PCA9685 : public I2CDevice {
 public:
-  [[nodiscard]] PCA9685(SMBus bus) : PCA9685{std::move(bus), 0x40} {}
-  [[nodiscard]] PCA9685(SMBus, std::uint16_t addr);
+  auto constexpr inline static default_addr = 0x40;
 
   PCA9685(PCA9685 const&) = delete;
   [[nodiscard]] PCA9685(PCA9685&&) noexcept = default;
@@ -29,9 +28,6 @@ public:
 
   [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> Result<std::uint16_t, std::error_code>;
   auto duty_cycle(std::uint8_t channel, std::uint16_t duty_cycle) -> std::error_code;
-
-private:
-  SMBus bus_;
 };
 
 } // namespace ilanta

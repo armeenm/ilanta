@@ -19,23 +19,24 @@ extern "C" {
  * This class is NOT thread-safe. Create instances per-thread.
  * Linux will manage synchronization.
  */
-class SMBus {
+class I2CDevice {
 public:
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<std::filesystem::path>;
 
-  [[nodiscard]] SMBus(unsigned int bus_num);
-  [[nodiscard]] SMBus(std::filesystem::path const&);
+  [[nodiscard]] I2CDevice(unsigned int bus_num);
+  [[nodiscard]] I2CDevice(std::filesystem::path const&);
 
-  SMBus(SMBus const&);
-  SMBus(SMBus&&) noexcept;
+  I2CDevice(I2CDevice const&) = default;
+  I2CDevice(I2CDevice&&) noexcept = default;
 
-  auto operator=(SMBus const&) -> SMBus&;
-  auto operator=(SMBus &&) -> SMBus&;
+  auto operator=(I2CDevice const&) -> I2CDevice& = default;
+  auto operator=(I2CDevice&&) noexcept -> I2CDevice& = default;
 
-  ~SMBus();
+  ~I2CDevice();
 
-  [[nodiscard]] auto funcs() const noexcept -> unsigned long;
+  [[nodiscard]] auto path() const noexcept -> std::filesystem::path;
   [[nodiscard]] auto native_handle() const noexcept -> int;
+  [[nodiscard]] auto funcs() const noexcept -> unsigned long;
 
   [[nodiscard]] auto find_devs() const noexcept -> std::vector<std::uint16_t>;
 
