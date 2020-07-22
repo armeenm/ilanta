@@ -5,9 +5,12 @@
 
 namespace ilanta {
 
-TCA9548::TCA9548(SMBus&& bus, std::uint16_t const addr_in) : bus_{std::move(bus)} {
-  if (addr(addr_in))
-    err_log_throw("Failed to set TCA9548 address to {}", addr_in);
+TCA9548::TCA9548(std::filesystem::path const& path, std::uint16_t const addr_in)
+  : I2CDevice{std::move(path)} {
+
+  auto const e = addr(addr_in);
+  if (e)
+    err_log_throw("Failed to set TCA9548 address to {}: {} [{}]", addr_in, e.message(), e.value());
 }
 
 auto TCA9548::port(std::uint8_t const port) const noexcept -> std::error_code {
@@ -16,10 +19,6 @@ auto TCA9548::port(std::uint8_t const port) const noexcept -> std::error_code {
   // TODO: Implement
 
   return {};
-}
-
-auto TCA9548::addr(std::uint16_t const addr) const noexcept -> std::error_code {
-  return bus_.addr(addr);
 }
 
 } // namespace ilanta

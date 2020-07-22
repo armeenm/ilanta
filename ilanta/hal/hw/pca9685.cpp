@@ -51,27 +51,32 @@ auto constexpr chan_reg_offset(std::uint8_t const channel) -> std::uint8_t {
   return std::uint8_t(4U * channel);
 }
 
-PCA9685::PCA9685(SMBus bus, std::uint16_t const addr_in) : bus_{std::move(bus)} {
-  addr(addr_in);
-  reset();
+PCA9685::PCA9685(std::filesystem::path const& path, std::uint16_t const addr_in)
+  : I2CDevice{std::move(path)} {
+
+  auto e = addr(addr_in);
+  if (e)
+    err_log_throw("Failed to set address to {}: {} [{}]", addr_in, e.message(), e.value());
+
+  e = reset();
+  if (e)
+    err_log_throw("Failed to reset device: {} [{}]", e.message(), e.value());
 }
 
-auto PCA9685::reset() const noexcept -> void {
-  bus_.write_byte(Reg::Mode1, 0x04); // Normal mode
-  bus_.write_byte(Reg::Mode2, 0x04); // Push-pull
-}
+auto PCA9685::reset() const noexcept -> std::error_code {
+  auto e = write_byte(Reg::Mode1, 0x04); // Normal mode
+  e = e ?: write_byte(Reg::Mode2, 0x04); // Push-pull
 
-auto PCA9685::addr(std::uint16_t const addr) const noexcept -> std::error_code {
-  return bus_.addr(addr);
+  return e;
 }
 
 auto PCA9685::freq(std::uint16_t const freq) const noexcept -> std::error_code {
   auto const prescale = static_cast<std::uint8_t>((clock_freq / 4096.0 / freq) - 1.0);
 
-  auto e = bus_.write_byte(Reg::Mode1, 0x10);        // Sleep
-  e = e ?: bus_.write_byte(Reg::PreScale, prescale); // PWM multiplier
-  e = e ?: bus_.write_byte(Reg::Mode1, 0x80);        // Restart
-  e = e ?: bus_.write_byte(Reg::Mode2, 0x04);        // Push-pull
+  auto e = write_byte(Reg::Mode1, 0x10);        // Sleep
+  e = e ?: write_byte(Reg::PreScale, prescale); // PWM multiplier
+  e = e ?: write_byte(Reg::Mode1, 0x80);        // Restart
+  e = e ?: write_byte(Reg::Mode2, 0x04);        // Push-pull
 
   return e;
 }
@@ -81,10 +86,10 @@ auto PCA9685::duty_cycle(std::uint8_t const channel) -> Result<std::uint16_t, st
 
   auto const offset = chan_reg_offset(channel);
 
-  auto val = std::uint16_t{bus_.read_byte(Reg::Chan0OffH + offset).unwrap()};
+  auto val = std::uint16_t{read_byte(Reg::Chan0OffH + offset).unwrap()};
   val &= 0xFU;
   val <<= 8U;
-  val += bus_.read_byte(Reg::Chan0OffL + offset).unwrap();
+  val += read_byte(Reg::Chan0OffL + offset).unwrap();
 
   return val;
 }
@@ -100,7 +105,7 @@ auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cy
   spdlog::debug("Duty cycle: {}", duty_cycle);
 
   auto send = [=, this](std::uint8_t reg, unsigned int val) {
-    return bus_.write_byte(std::uint8_t(reg + offset), std::uint8_t(val));
+    return write_byte(std::uint8_t(reg + offset), std::uint8_t(val));
   };
 
   auto e = send(Reg::Chan0OffL, duty_cycle & 0xFFU);

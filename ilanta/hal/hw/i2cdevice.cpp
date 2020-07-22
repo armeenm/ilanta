@@ -10,13 +10,26 @@ namespace ilanta {
 using namespace std::literals;
 
 auto I2CDevice::find_buses() noexcept -> std::vector<std::filesystem::path> {
-  return I2C::find_buses();
+  using namespace std::literals;
+
+  auto constexpr dir_prefix = "/dev/"sv;
+  auto constexpr file_prefix = "i2c-"sv;
+
+  auto ret = std::vector<std::filesystem::path>{};
+
+  for (auto const& entry : std::filesystem::directory_iterator{dir_prefix}) {
+    auto const cmp =
+        std::strncmp(entry.path().filename().c_str(), file_prefix.data(), file_prefix.size());
+
+    if (cmp == 0)
+      ret.emplace_back(entry);
+  }
+
+  return ret;
 }
 
-I2CDevice::I2CDevice(unsigned int const bus_num) : I2CDevice{fmt::format("/dev/i2c-{}", bus_num)} {}
-
 I2CDevice::I2CDevice(std::filesystem::path const& path)
-    : path_{path}, fd_{open(path.c_str(), O_RDWR)} {
+    : path_{std::move(path)}, fd_{open(path.c_str(), O_RDWR)} {
 
   if (fd_ < 0)
     err_log_throw("Failed to open file '{}' for I2CDevice device: {}", path.string(),

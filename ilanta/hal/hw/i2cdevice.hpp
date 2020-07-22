@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ilanta/util/result.hpp"
+
+#include <fmt/core.h>
 #include <cstdint>
 #include <filesystem>
 #include <system_error>
@@ -15,6 +17,10 @@ extern "C" {
 }
 } // namespace detail
 
+[[nodiscard]] auto inline i2c_path(unsigned int bus_num) -> std::filesystem::path {
+  return fmt::format("/dev/i2c-{}", bus_num);
+}
+
 /**
  * This class is NOT thread-safe. Create instances per-thread.
  * Linux will manage synchronization.
@@ -23,7 +29,6 @@ class I2CDevice {
 public:
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<std::filesystem::path>;
 
-  [[nodiscard]] I2CDevice(unsigned int bus_num);
   [[nodiscard]] I2CDevice(std::filesystem::path const&);
 
   I2CDevice(I2CDevice const&) = default;
