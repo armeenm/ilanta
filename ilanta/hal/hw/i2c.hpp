@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+ * NOTE: currently unused; prefer I2CDevice
+ */
+
 #include <cerrno>
 #include <concepts>
 #include <cstdint>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ilanta/hal/logic_level.hpp"
+
 #include <array>
 #include <gpiod.hpp>
 #include <optional>
@@ -13,7 +14,7 @@ using gpiod::line;
 class BigEasyDriver {
 public:
   // TODO: check directions
-  enum Direction : int { FORWARD, REVERSE };
+  enum Direction : int { Forward, Reverse };
 
   struct Pins {
     line step, dir;
@@ -23,7 +24,9 @@ public:
     std::optional<std::array<line, 3>> ms = std::nullopt;
   };
 
-  BigEasyDriver(Pins&&, std::string_view consumer_name, LogicLevel reverse = LogicLevel::HIGH);
+  BigEasyDriver(Pins const&, std::string_view consumer_name, LogicLevel reverse);
+  BigEasyDriver(Pins const& pins, std::string_view consumer_name)
+      : BigEasyDriver{pins, consumer_name, LogicLevel::High} {}
 
   BigEasyDriver(BigEasyDriver const&) = delete;
   BigEasyDriver(BigEasyDriver&&) noexcept = default;

@@ -9,9 +9,9 @@
 
 namespace ilanta {
 
-BigEasyDriver::BigEasyDriver(Pins&& pins, std::string_view consumer_name, LogicLevel const reverse)
+BigEasyDriver::BigEasyDriver(Pins const& pins, std::string_view const consumer_name,
+                             LogicLevel const reverse)
     : pins_(std::move(pins)) {
-  spdlog::info("Constructing BigEasyDriver");
 
   auto const setup_l = [&](gpiod::line const& l, auto&&... ts) {
     request_output(l, consumer_name, std::forward<decltype(ts)>(ts)...);
@@ -19,7 +19,7 @@ BigEasyDriver::BigEasyDriver(Pins&& pins, std::string_view consumer_name, LogicL
 
   setup_l(pins_.step);
 
-  setup_l(pins_.dir, reverse == LogicLevel::LOW);
+  setup_l(pins_.dir, reverse == LogicLevel::Low);
 
   if (pins_.en)
     setup_l(*pins_.en, true);
@@ -42,16 +42,16 @@ BigEasyDriver::BigEasyDriver(Pins&& pins, std::string_view consumer_name, LogicL
 auto BigEasyDriver::move(Direction const dir, unsigned int const steps) noexcept -> void {
   using namespace std::chrono_literals;
 
-  auto constexpr PERIOD_HALF = 50ns;
+  auto constexpr period_half = 50ns;
 
   // Set desired direction
   pins_.dir.set_value(dir);
 
   for (unsigned int i = 0; i < steps; ++i) {
     pins_.step.set_value(1);
-    std::this_thread::sleep_for(PERIOD_HALF);
+    std::this_thread::sleep_for(period_half);
     pins_.step.set_value(0);
-    std::this_thread::sleep_for(PERIOD_HALF);
+    std::this_thread::sleep_for(period_half);
   }
 }
 
