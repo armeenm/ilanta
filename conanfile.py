@@ -8,6 +8,8 @@ class Ilanta(ConanFile):
     requires = [ 'spdlog/1.6.1'
                , 'fmt/6.2.1'
                , 'range-v3/0.10.0'
+               , 'doctest/2.4.0'
+               , 'gtest/1.10.0'
                ]
 
     def build(self):

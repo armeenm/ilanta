@@ -3,7 +3,6 @@
 #include <spdlog/spdlog.h>
 
 #include <chrono>
-#include <exception>
 #include <thread>
 
 #include "ilanta/hal/hw/gpiod.hpp"
@@ -22,11 +21,8 @@ BigEasyDriver::BigEasyDriver(Pins const& pins, std::string_view const consumer_n
   setup_l(pins_.dir, reverse == LogicLevel::Low);
 
   if (pins_.en) setup_l(*pins_.en, true);
-
   if (pins_.rst) setup_l(*pins_.rst, true);
-
   if (pins_.sleep) setup_l(*pins_.sleep, true);
-
   if (pins_.ms)
     for (auto const& pin : *pins_.ms) setup_l(pin);
 }

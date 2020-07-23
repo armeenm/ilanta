@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.15...3.18 FATAL_ERROR)
 
-
 list(PREPEND CMAKE_PREFIX_PATH
     ${CMAKE_BINARY_DIR})
   list(PREPEND CMAKE_MODULE_PATH
-      ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 project(ilanta
   VERSION 0.0.1
@@ -61,9 +60,9 @@ add_library(ilanta::ilanta ALIAS ilanta)
 target_include_directories(ilanta
   PUBLIC
   $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
   PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR})
+  ${CMAKE_SOURCE_DIR})
 
 target_compile_features(ilanta PUBLIC cxx_std_20)
 
@@ -103,31 +102,23 @@ endif()
 ### Tests
 ################################################################################
 
-find_package(Catch2 REQUIRED)
+find_package(doctest REQUIRED CONFIG)
+find_package(GTest REQUIRED CONFIG)
 
-file(GLOB_RECURSE TESTS
-  LIST_DIRECTORIES false
-  CONFIGURE_DEPENDS
-  "test/*.cpp")
+add_executable(test ${CMAKE_SOURCE_DIR}/test/test.cpp)
 
-add_executable(tests ${TESTS})
+target_link_libraries(test PRIVATE GTest::GTest doctest::doctest ilanta::ilanta)
 
-target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(tests PRIVATE Catch2::Catch2 ilanta)
-target_compile_options(tests PRIVATE "${COMPILER_WARNINGS}")
-target_compile_features(tests PRIVATE cxx_std_20)
-
-if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR STREQUAL "Ninja")
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(tests PRIVATE -fdiagnostics-color=always)
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(tests PRIVATE -fcolor-diagnostics)
-  endif()
+if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+  target_compile_options(ilanta PRIVATE -fsanitize=address -fsanitize=undefined)
+  target_link_libraries(ilanta PRIVATE asan ubsan)
 endif()
 
-include(CTest)
-include(Catch)
-catch_discover_tests(tests)
+if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR MATCHES "^Ninja")
+  target_compile_options(ilanta PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
+    $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>)
+endif()
 
 ################################################################################
 ### Installation
