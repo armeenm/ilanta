@@ -1,18 +1,18 @@
 #pragma once
 
-#include "ilanta/hal/logic_level.hpp"
-
 #include <array>
 #include <gpiod.hpp>
 #include <optional>
 #include <string_view>
+
+#include "ilanta/hal/logic_level.hpp"
 
 namespace ilanta {
 
 using gpiod::line;
 
 class BigEasyDriver {
-public:
+ public:
   // TODO: check directions
   enum Direction : int { Forward, Reverse };
 
@@ -38,8 +38,8 @@ public:
 
   auto move(Direction, unsigned int steps) noexcept -> void;
 
-private:
+ private:
   Pins pins_;
 };
 
-} // namespace ilanta
+}  // namespace ilanta

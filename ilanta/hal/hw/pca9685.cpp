@@ -15,4 +15,4 @@ auto PCA9685::duty_cycle(std::uint8_t const channel) -> Result<std::uint16_t, st
 auto PCA9685::duty_cycle(std::uint8_t const channel, std::uint16_t const duty_cycle)
     -> std::error_code {}
 
-} // namespace ilanta
+}  // namespace ilanta

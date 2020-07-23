@@ -8,8 +8,9 @@
 
 namespace ilanta {
 
-template <typename T, typename E> class Result : public std::variant<T, E> {
-public:
+template <typename T, typename E>
+class Result : public std::variant<T, E> {
+ public:
   using ok_type = T;
   using err_type = E;
   using variant_type = std::variant<T, E>;
@@ -27,8 +28,7 @@ public:
   }
 
   [[nodiscard]] auto constexpr expect(std::string_view msg) const -> T {
-    if (is_err())
-      throw std::logic_error{msg.data()};
+    if (is_err()) throw std::logic_error{msg.data()};
 
     return std::get<0>(*this);
   }
@@ -39,4 +39,4 @@ public:
   }
 };
 
-} // namespace ilanta
+}  // namespace ilanta

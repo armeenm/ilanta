@@ -1,9 +1,11 @@
 #include "ilanta/hal/hw/i2cdevice.hpp"
-#include "ilanta/hal/hw/i2c.hpp"
-#include "ilanta/util/errors.hpp"
+
+#include <fmt/core.h>
 
 #include <cerrno>
-#include <fmt/core.h>
+
+#include "ilanta/hal/hw/i2c.hpp"
+#include "ilanta/util/errors.hpp"
 
 namespace ilanta {
 
@@ -21,8 +23,7 @@ auto I2CDevice::find_buses() noexcept -> std::vector<std::filesystem::path> {
     auto const cmp =
         std::strncmp(entry.path().filename().c_str(), file_prefix.data(), file_prefix.size());
 
-    if (cmp == 0)
-      ret.emplace_back(entry);
+    if (cmp == 0) ret.emplace_back(entry);
   }
 
   return ret;
@@ -30,7 +31,6 @@ auto I2CDevice::find_buses() noexcept -> std::vector<std::filesystem::path> {
 
 I2CDevice::I2CDevice(std::filesystem::path const& path)
     : path_{std::move(path)}, fd_{open(path.c_str(), O_RDWR)} {
-
   if (fd_ < 0)
     err_log_throw("Failed to open file '{}' for I2CDevice device: {}", path.string(),
                   std::strerror(errno));
@@ -52,8 +52,7 @@ auto I2CDevice::find_devs() const noexcept -> std::vector<std::uint16_t> {
   auto ret = std::vector<std::uint16_t>{};
 
   for (std::uint16_t addr = min_addr; addr <= max_addr; ++addr) {
-    if (detail::ioctl(fd_, I2C_SLAVE, addr) < 0)
-      continue;
+    if (detail::ioctl(fd_, I2C_SLAVE, addr) < 0) continue;
 
     auto const res = [=, this] {
       if (funcs_ & I2C_FUNC_SMBUS_QUICK)
@@ -62,8 +61,7 @@ auto I2CDevice::find_devs() const noexcept -> std::vector<std::uint16_t> {
         return detail::i2c_smbus_read_byte(fd_);
     }();
 
-    if (res >= 0)
-      ret.emplace_back(addr);
+    if (res >= 0) ret.emplace_back(addr);
   }
 
   return ret;
@@ -77,7 +75,6 @@ auto I2CDevice::addr(std::uint16_t const addr) const noexcept -> std::error_code
 }
 
 auto I2CDevice::read_byte() const noexcept -> Result<std::uint8_t, std::error_code> {
-
   auto const res = detail::i2c_smbus_read_byte(fd_);
   if (res < 0)
     return errno_to_err_code(res);
@@ -87,7 +84,6 @@ auto I2CDevice::read_byte() const noexcept -> Result<std::uint8_t, std::error_co
 
 auto I2CDevice::read_byte(std::uint8_t const cmd) const noexcept
     -> Result<std::uint8_t, std::error_code> {
-
   auto const res = detail::i2c_smbus_read_byte_data(fd_, cmd);
   if (res < 0)
     return errno_to_err_code(res);
@@ -97,7 +93,6 @@ auto I2CDevice::read_byte(std::uint8_t const cmd) const noexcept
 
 auto I2CDevice::read_word(std::uint8_t const cmd) const noexcept
     -> Result<std::uint16_t, std::error_code> {
-
   auto const res = detail::i2c_smbus_read_word_data(fd_, cmd);
   if (res < 0)
     return errno_to_err_code(res);
@@ -126,4 +121,4 @@ auto I2CDevice::write_word(std::uint8_t cmd, std::uint16_t val) const noexcept -
     return {};
 }
 
-} // namespace ilanta
+}  // namespace ilanta

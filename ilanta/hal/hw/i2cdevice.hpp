@@ -1,21 +1,23 @@
 #pragma once
 
-#include "ilanta/util/result.hpp"
-
 #include <fmt/core.h>
+
 #include <cstdint>
 #include <filesystem>
 #include <system_error>
 #include <vector>
 
+#include "ilanta/util/result.hpp"
+
 namespace ilanta {
 
 namespace detail {
 extern "C" {
-#include "ilanta/third_party/smbus.h"
 #include <linux/i2c-dev.h>
+
+#include "ilanta/third_party/smbus.h"
 }
-} // namespace detail
+}  // namespace detail
 
 [[nodiscard]] auto inline i2c_path(unsigned int bus_num) -> std::filesystem::path {
   return fmt::format("/dev/i2c-{}", bus_num);
@@ -26,7 +28,7 @@ extern "C" {
  * Linux will manage synchronization.
  */
 class I2CDevice {
-public:
+ public:
   [[nodiscard]] static auto find_buses() noexcept -> std::vector<std::filesystem::path>;
 
   [[nodiscard]] I2CDevice(std::filesystem::path const&);
@@ -59,10 +61,10 @@ public:
 
   auto write_word(std::uint8_t cmd, std::uint16_t val) const noexcept -> std::error_code;
 
-private:
+ private:
   std::filesystem::path path_;
   int fd_;
   unsigned long funcs_;
 };
 
-} // namespace ilanta
+}  // namespace ilanta

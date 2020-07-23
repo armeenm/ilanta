@@ -4,14 +4,15 @@
  * NOTE: currently unused; prefer I2CDevice
  */
 
+#include <fcntl.h>
+#include <spdlog/spdlog.h>
+
 #include <cerrno>
 #include <concepts>
 #include <cstdint>
-#include <fcntl.h>
 #include <filesystem>
 #include <optional>
 #include <span>
-#include <spdlog/spdlog.h>
 #include <system_error>
 #include <vector>
 
@@ -22,15 +23,16 @@ namespace ilanta {
 
 namespace detail {
 extern "C" {
-#include "ilanta/third_party/smbus.h"
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+#include "ilanta/third_party/smbus.h"
 }
-} // namespace detail
+}  // namespace detail
 
 class I2C {
-public:
+ public:
   struct Info {
     std::filesystem::path path;
     unsigned long funcs;
@@ -92,9 +94,9 @@ public:
   [[nodiscard]] auto read_byte(std::uint16_t addr, std::uint8_t bytes...) const noexcept
       -> Result<std::uint8_t, std::error_code>;
 
-private:
+ private:
   Info info_;
   int fd_;
 };
 
-} // namespace ilanta
+}  // namespace ilanta

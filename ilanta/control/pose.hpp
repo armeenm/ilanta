@@ -13,8 +13,9 @@ namespace ilanta {
 /**
  * Translational pose structure
  */
-template <Arithmetic T = float> class PoseTL {
-public:
+template <Arithmetic T = float>
+class PoseTL {
+ public:
   [[nodiscard]] constexpr explicit PoseTL() noexcept {}
   [[nodiscard]] constexpr PoseTL(T x, T y, T z) noexcept : x_{x}, y_{y}, z_{z} {}
 
@@ -38,7 +39,6 @@ public:
 
   [[nodiscard]] auto constexpr operator<=>(PoseTL<T> const& other) const noexcept
       -> std::partial_ordering {
-
     return l2sqnorm() <=> other.l2sqnorm();
   };
 
@@ -56,7 +56,7 @@ public:
 
   [[nodiscard]] auto constexpr l2norm() const noexcept -> T { return sqrt(l2sqnorm()); }
 
-private:
+ private:
   T x_ = 0.0;
   T y_ = 0.0;
   T z_ = 0.0;
@@ -68,4 +68,4 @@ inline auto operator<<(std::ostream& os, PoseTL<T> const& pose) -> std::ostream&
   return os;
 }
 
-} // namespace ilanta
+}  // namespace ilanta

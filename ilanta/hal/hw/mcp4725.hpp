@@ -1,15 +1,15 @@
 #pragma once
 
-#include "ilanta/linux/fdesc.hpp"
-
 #include <cstdint>
 #include <string_view>
 #include <system_error>
 
+#include "ilanta/linux/fdesc.hpp"
+
 namespace ilanta {
 
 class MCP4725 {
-public:
+ public:
   [[nodiscard]] explicit MCP4725(std::string_view path);
 
   MCP4725(MCP4725 const&) = default;
@@ -24,8 +24,8 @@ public:
 
   auto val(std::uint16_t) const noexcept -> std::error_code;
 
-private:
+ private:
   FDesc fd_;
 };
 
-} // namespace ilanta
+}  // namespace ilanta

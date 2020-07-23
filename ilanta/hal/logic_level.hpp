@@ -8,4 +8,4 @@ enum class LogicLevel : int { Low, High };
   return (orig == LogicLevel::Low) ? LogicLevel::High : LogicLevel::Low;
 }
 
-} // namespace ilanta
+}  // namespace ilanta

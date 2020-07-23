@@ -1,21 +1,21 @@
 #pragma once
 
-#include "ilanta/util/format.hpp"
-#include "ilanta/util/result.hpp"
+#include <spdlog/spdlog.h>
 
 #include <concepts>
 #include <exception>
-#include <spdlog/spdlog.h>
 #include <string>
 #include <string_view>
 #include <system_error>
+
+#include "ilanta/util/format.hpp"
+#include "ilanta/util/result.hpp"
 
 namespace ilanta {
 
 template <typename E = std::runtime_error, typename... Ts>
 inline auto err_log_throw(std::string_view str,
                           Ts&&... args) requires std::constructible_from<E, std::string> {
-
   auto const err = format(str, std::forward<Ts>(args)...);
   spdlog::error(err);
   throw E{err};
@@ -25,4 +25,4 @@ inline auto err_log_throw(std::string_view str,
   return std::make_error_code(static_cast<std::errc>(errno_code));
 }
 
-} // namespace ilanta
+}  // namespace ilanta

@@ -12,4 +12,4 @@ auto MCP4725::val(std::uint16_t const val) const noexcept -> std::error_code {
   return fd_.write(val);
 }
 
-} // namespace ilanta
+}  // namespace ilanta

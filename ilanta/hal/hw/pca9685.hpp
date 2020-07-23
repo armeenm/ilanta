@@ -1,16 +1,16 @@
 #pragma once
 
-#include "ilanta/linux/fdesc.hpp"
-#include "ilanta/util/result.hpp"
-
 #include <cstdint>
 #include <system_error>
 #include <utility>
 
+#include "ilanta/linux/fdesc.hpp"
+#include "ilanta/util/result.hpp"
+
 namespace ilanta {
 
 class PCA9685 {
-public:
+ public:
   [[nodiscard]] explicit PCA9685(std::string_view path);
 
   PCA9685(PCA9685 const&) = default;
@@ -28,8 +28,8 @@ public:
   [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> Result<std::uint16_t, std::error_code>;
   auto duty_cycle(std::uint8_t channel, std::uint16_t duty_cycle) -> std::error_code;
 
-private:
+ private:
   FDesc fd_;
 };
 
-} // namespace ilanta
+}  // namespace ilanta

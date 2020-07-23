@@ -16,4 +16,4 @@ class FileDesc {
   auto operator=(FileDesc &&) -> FileDesc&;
 };
 
-}; // namespace ilanta
+};  // namespace ilanta
