@@ -4,12 +4,13 @@
 
 #include <cstdint>
 #include <string_view>
+#include <system_error>
 
 namespace ilanta {
 
 class MCP4725 {
 public:
-  [[nodiscard]] MCP4725(std::string_view const& path);
+  [[nodiscard]] explicit MCP4725(std::string_view path);
 
   MCP4725(MCP4725 const&) = default;
   [[nodiscard]] MCP4725(MCP4725&&) noexcept = default;

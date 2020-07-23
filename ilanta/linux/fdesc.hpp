@@ -17,7 +17,7 @@ namespace ilanta {
 
 class FDesc {
 public:
-  [[nodiscard]] explicit FDesc(std::string_view filename, int flags);
+  [[nodiscard]] FDesc(std::string_view filename, int flags);
 
   FDesc(FDesc const&);
   FDesc(FDesc&&) noexcept;

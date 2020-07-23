@@ -1,19 +1,17 @@
 #pragma once
 
+#include "ilanta/linux/fdesc.hpp"
 #include "ilanta/util/result.hpp"
-#include "ilanta/hal/hw/i2cdevice.hpp"
 
 #include <cstdint>
 #include <system_error>
 #include <utility>
-#include <filesystem>
 
 namespace ilanta {
 
-class PCA9685 : public I2CDevice {
+class PCA9685 {
 public:
-  PCA9685(std::filesystem::path const& path) : PCA9685{std::move(path), 0x40} {}
-  PCA9685(std::filesystem::path const& path, std::uint16_t addr);
+  [[nodiscard]] explicit PCA9685(std::string_view path);
 
   PCA9685(PCA9685 const&) = default;
   PCA9685(PCA9685&&) noexcept = default;
@@ -29,6 +27,9 @@ public:
 
   [[nodiscard]] auto duty_cycle(std::uint8_t channel) -> Result<std::uint16_t, std::error_code>;
   auto duty_cycle(std::uint8_t channel, std::uint16_t duty_cycle) -> std::error_code;
+
+private:
+  FDesc fd_;
 };
 
 } // namespace ilanta

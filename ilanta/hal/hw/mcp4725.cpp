@@ -1,9 +1,8 @@
 #include "ilanta/hal/hw/mcp4725.hpp"
-#include "ilanta/linux/fdesc.hpp"
 
 namespace ilanta {
 
-MCP4725::MCP4725(std::string_view const& path) : fd_{path, O_WRONLY} {}
+MCP4725::MCP4725(std::string_view path) : fd_{path, O_WRONLY} {}
 
 auto MCP4725::fd() const noexcept -> FDesc { return fd_; }
 
