@@ -4,7 +4,7 @@ namespace ilanta {
 
 enum class LogicLevel : int { Low, High };
 
-inline auto operator!(LogicLevel& orig) -> LogicLevel {
+[[nodiscard]] auto inline operator!(LogicLevel& orig) -> LogicLevel {
   return (orig == LogicLevel::Low) ? LogicLevel::High : LogicLevel::Low;
 }
 
