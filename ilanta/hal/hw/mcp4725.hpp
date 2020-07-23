@@ -1,20 +1,15 @@
 #pragma once
 
-#include "ilanta/util/result.hpp"
-#include "ilanta/hal/hw/i2cdevice.hpp"
+#include "ilanta/linux/fdesc.hpp"
 
 #include <cstdint>
-#include <system_error>
-#include <filesystem>
-#include <span>
-#include <utility>
+#include <string_view>
 
 namespace ilanta {
 
-class MCP4725 : public I2CDevice {
+class MCP4725 {
 public:
-  [[nodiscard]] MCP4725(std::filesystem::path const& path) : MCP4725{std::move(path), 0x62} {}
-  [[nodiscard]] MCP4725(std::filesystem::path const& path, std::uint16_t addr);
+  [[nodiscard]] MCP4725(std::string_view const& path);
 
   MCP4725(MCP4725 const&) = default;
   [[nodiscard]] MCP4725(MCP4725&&) noexcept = default;
@@ -24,11 +19,12 @@ public:
 
   ~MCP4725() = default;
 
-  [[nodiscard]] auto val() const noexcept -> Result<std::uint16_t, std::error_code>;
+  [[nodiscard]] auto fd() const noexcept -> FDesc;
+
   auto val(std::uint16_t) const noexcept -> std::error_code;
 
 private:
-  auto transfer(std::span<std::uint8_t const> arr) const noexcept -> std::error_code;
+  FDesc fd_;
 };
 
 } // namespace ilanta
