@@ -1,9 +1,11 @@
 #pragma once
 
 #include <array>
+#include <chrono>
 #include <gpiod.hpp>
 #include <optional>
 #include <string_view>
+#include <thread>
 
 #include "ilanta/hal/logic_level.hpp"
 
@@ -36,7 +38,15 @@ class BigEasyDriver {
 
   ~BigEasyDriver() = default;
 
-  auto move(Direction, unsigned int steps) noexcept -> void;
+  [[nodiscard]] auto direction() const noexcept -> Direction;
+  auto direction(Direction) const noexcept -> void;
+
+  /*
+   * It is HIGHLY recommended to set a real-time scheduling policy for the current process to get
+   * accurate sleeps for the step(...) functions
+   */
+  auto step() const noexcept -> void { return step(20000); }
+  auto step(long delay_ns) const noexcept -> void;
 
  private:
   Pins pins_;

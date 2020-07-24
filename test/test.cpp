@@ -1,5 +1,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
+#include <fmt/format.h>
 #include <gmock/gmock.h>
 
-TEST_CASE("Testing...") { CHECK(2 == 2); }
+#include <ilanta/util/concurrent_queue.hpp>
+#include <thread>
+
+TEST_CASE("Concurrent queues are thread-safe") {
+  auto consumer = std::jthread{[] { fmt::print("Test!\n"); }};
+}

@@ -52,7 +52,7 @@ set(BUILD_OPTS
 file(GLOB_RECURSE SRCS
   LIST_DIRECTORIES false
   CONFIGURE_DEPENDS
-  "${CMAKE_SOURCE_DIR}/ilanta/*.cpp")
+  "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 add_library(ilanta SHARED ${SRCS})
 add_library(ilanta::ilanta ALIAS ilanta)
@@ -62,10 +62,9 @@ target_include_directories(ilanta
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
   PRIVATE
-  ${CMAKE_SOURCE_DIR})
+  ${CMAKE_SOURCE_DIR}/src)
 
 target_compile_features(ilanta PUBLIC cxx_std_20)
-
 target_compile_options(ilanta PRIVATE ${BUILD_OPTS})
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
@@ -107,15 +106,22 @@ find_package(GTest REQUIRED CONFIG)
 
 add_executable(test ${CMAKE_SOURCE_DIR}/test/test.cpp)
 
-target_link_libraries(test PRIVATE GTest::GTest doctest::doctest ilanta::ilanta)
+target_link_libraries(test
+  PRIVATE
+  GTest::GTest
+  doctest::doctest
+  fmt::fmt
+  spdlog::spdlog
+  gpiodcxx::gpiodcxx
+  ilanta::ilanta)
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-  target_compile_options(ilanta PRIVATE -fsanitize=address -fsanitize=undefined)
-  target_link_libraries(ilanta PRIVATE asan ubsan)
+  target_compile_options(test PRIVATE -fsanitize=address,undefined,leak,thread)
+  target_link_libraries(test PRIVATE asan ubsan)
 endif()
 
 if(FORCE_COLORED_OUTPUT OR CMAKE_GENERATOR MATCHES "^Ninja")
-  target_compile_options(ilanta PRIVATE
+  target_compile_options(test PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
     $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>)
 endif()
@@ -135,9 +141,8 @@ install(TARGETS ilanta
 set_target_properties(ilanta PROPERTIES EXPORT_NAME ilanta)
 
 install(
-  DIRECTORY ilanta/
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ilanta
-  FILES_MATCHING PATTERN "*.h*")
+  DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(EXPORT ilanta-targets
   FILE ilantaTargets.cmake

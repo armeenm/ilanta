@@ -68,12 +68,11 @@ auto FDesc::path() const -> std::string {
 }
 
 auto FDesc::write_arr(std::span<std::uint8_t const> const arr) const noexcept -> std::error_code {
-  if (::write(fd_, arr.data(), arr.size_bytes()) < 0)
-    return errno_to_err_code(errno);
+  if (::write(fd_, arr.data(), arr.size_bytes()) < 0) return errno_to_err_code(errno);
 
   return {};
 }
 
 auto FDesc::operator*() const noexcept -> int { return fd(); }
 
-} // namespace ilanta
+}  // namespace ilanta
