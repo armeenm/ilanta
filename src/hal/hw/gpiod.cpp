@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "ilanta/systems/system.hpp"
 #include "ilanta/util/errors.hpp"
 
 namespace ilanta {
